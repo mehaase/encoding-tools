@@ -14,32 +14,32 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:html';
-
 import 'package:angular/angular.dart';
-import 'package:logging/logging.dart';
+import 'package:angular_forms/angular_forms.dart';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 
-import 'components/input.dart';
-import 'components/md5.dart';
-import 'services/value.dart';
+import '../services/value.dart';
 
-final Logger log = new Logger('app');
-InputComponent ic;
+const String SELECTOR = 'transform-md5';
 
 @Component(
-    selector: 'app',
-    templateUrl: 'app.html',
-    directives: const [CORE_DIRECTIVES, InputComponent, Md5Component],
-    providers: const [ValueService]
+    selector: SELECTOR,
+    templateUrl: 'md5.html',
+    directives: const [CORE_DIRECTIVES, formDirectives]
 )
-class AppComponent {
-    AppComponent() {
-        Logger.root.level = Level.ALL;
-        Logger.root.onRecord.listen((LogRecord rec) {
-            window.console.log(
-                '${rec.time} [${rec.level.name}]'
-                ' ${rec.loggerName}: ${rec.message}'
-            );
+class Md5Component {
+    String output;
+
+    /// Constructor.
+    Md5Component(ValueService valueService) {
+        valueService.getValueProviderStream('tx1').listen((ValueEvent e) {
+            this.transform(e.data);
         });
+    }
+
+    void transform(List<int> data) {
+        var digest = hex.encode(md5.convert(data).bytes);
+        this.output = digest;
     }
 }

@@ -14,32 +14,33 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async';
 import 'dart:html';
 
 import 'package:angular/angular.dart';
-import 'package:logging/logging.dart';
+import 'package:angular_forms/angular_forms.dart';
 
-import 'components/input.dart';
-import 'components/md5.dart';
-import 'services/value.dart';
+import '../services/value.dart';
 
-final Logger log = new Logger('app');
-InputComponent ic;
+const String SELECTOR = 'transform-input';
 
 @Component(
-    selector: 'app',
-    templateUrl: 'app.html',
-    directives: const [CORE_DIRECTIVES, InputComponent, Md5Component],
-    providers: const [ValueService]
+    selector: SELECTOR,
+    templateUrl: 'input.html',
+    directives: const [CORE_DIRECTIVES, formDirectives]
 )
-class AppComponent {
-    AppComponent() {
-        Logger.root.level = Level.ALL;
-        Logger.root.onRecord.listen((LogRecord rec) {
-            window.console.log(
-                '${rec.time} [${rec.level.name}]'
-                ' ${rec.loggerName}: ${rec.message}'
-            );
-        });
+class InputComponent {
+    /// Stream controller for emitting value events.
+    StreamController<ValueEvent> _streamController;
+
+    /// Constructor.
+    InputComponent(ValueService valueService) {
+        var name = 'tx1'; // TODO auto name generation
+        this._streamController = valueService.registerValueProvider(name);
+    }
+
+    /// Hooked to ngModelChange
+    void setInput(String value) {
+        this._streamController.add(new ValueEvent(value.codeUnits));
     }
 }
