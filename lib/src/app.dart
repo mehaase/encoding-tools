@@ -14,11 +14,11 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:convert';
 import 'dart:html';
 
 import 'package:angular/angular.dart';
 import 'package:angular_forms/angular_forms.dart';
+import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
 
@@ -37,15 +37,16 @@ class AppComponent {
     AppComponent() {
         Logger.root.level = Level.ALL;
         Logger.root.onRecord.listen((LogRecord rec) {
-            // window.console.log('${rec.time} [${rec.level.name}] ${rec.message}');
-            print('${rec.time} [${rec.level.name}] ${rec.message}');
+            window.console.log(
+                '${rec.time} [${rec.level.name}]'
+                ' ${rec.loggerName}: ${rec.message}'
+            );
         });
     }
 
     /// Hooked up to ngModelChange directive.
     void setInput(String input) {
-        var digest =md5(input.codeUnits);
-        log.info(input);
-        this.output = input + '---';
+        var digest = hex.encode(md5.convert(input.codeUnits).bytes);
+        this.output = digest;
     }
 }
