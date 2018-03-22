@@ -1,0 +1,24 @@
+name: encoding_tools
+homepage: https://github.com/mehaase/encoding_tools
+
+environment:
+  sdk: '>=1.12.0 <2.0.0'
+
+dependencies:
+  angular: '^4.0.0'
+  angular_forms: '^1.0.0'
+  crypto: '^2.0.2'
+  logging: '^0.11.3'
+
+dev_dependencies:
+  browser: ^0.10.0
+  dart_to_js_script_rewriter: ^1.0.1
+
+transformers:
+- angular:
+    entry_points: web/main.dart
+- dart_to_js_script_rewriter
+
+web:
+  compiler:
+    debug: dartdevc
