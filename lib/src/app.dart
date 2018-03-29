@@ -19,20 +19,18 @@ import 'dart:html';
 import 'package:angular/angular.dart';
 import 'package:logging/logging.dart';
 
-import 'components/input.dart';
-import 'components/md5.dart';
-import 'services/value.dart';
+import 'components/workspace.dart';
 
 final Logger log = new Logger('app');
-InputComponent ic;
 
 @Component(
     selector: 'app',
     templateUrl: 'app.html',
-    directives: const [CORE_DIRECTIVES, InputComponent, Md5Component],
-    providers: const [ValueService]
+    directives: const [CORE_DIRECTIVES, Workspace]
 )
-class AppComponent {
+class AppComponent
+{
+    /// Constructor.
     AppComponent() {
         Logger.root.level = Level.ALL;
         Logger.root.onRecord.listen((LogRecord rec) {

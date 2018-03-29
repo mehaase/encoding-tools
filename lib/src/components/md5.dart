@@ -15,31 +15,42 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import 'package:angular/angular.dart';
-import 'package:angular_forms/angular_forms.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
-import '../services/value.dart';
-
-const String SELECTOR = 'transform-md5';
+import '../model/gadget.dart';
 
 @Component(
-    selector: SELECTOR,
+    selector: 'md5-gadget',
     templateUrl: 'md5.html',
-    directives: const [CORE_DIRECTIVES, formDirectives]
+    directives: const [CORE_DIRECTIVES]
 )
-class Md5Component {
-    String output;
+class Md5Gadget extends BaseGadget implements OnChanges {
+    /// This gadget has one input.
+    @Input()
+    GadgetPipe input;
 
-    /// Constructor.
-    Md5Component(ValueService valueService) {
-        valueService.getValueProviderStream('tx1').listen((ValueEvent e) {
-            this.transform(e.data);
-        });
+    /// This gadget outputs the MD5 hash of its input.
+    @Input()
+    GadgetPipe output;
+
+    String digest;
+
+    /// Calculate MD5 digest of the input.
+    void transform(List<int> data) {
+        var hashBytes = md5.convert(data).bytes;
+        this.digest = hex.encode(hashBytes);
+        this.send(this.output, hashBytes);
     }
 
-    void transform(List<int> data) {
-        var digest = hex.encode(md5.convert(data).bytes);
-        this.output = digest;
+    /// Wire up the inputs and outputs.
+    ///
+    /// Angular calls this when the properties change.
+    void ngOnChanges(Map<String,SimpleChange> changes) {
+        changes.forEach((property, change) {
+            if (property == 'input') {
+                this.rewire(change, this.transform);
+            }
+        });
     }
 }

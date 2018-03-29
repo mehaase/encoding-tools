@@ -6,10 +6,10 @@ environment:
 
 dependencies:
   angular: '^4.0.0'
-  angular_forms: '^1.0.0'
   convert: '^2.0.1'
   crypto: '^2.0.2'
   logging: '^0.11.3'
+  uuid: '^0.5.3' # TODO remove?
 
 dev_dependencies:
   browser: ^0.10.0

@@ -16,20 +16,22 @@
 
 import 'package:angular/angular.dart';
 
+import '../components/input.dart';
+import '../components/md5.dart';
 import '../model/gadget.dart';
 
+/// Manages the entire workspace.
 @Component(
-    selector: 'input-gadget',
-    templateUrl: 'input.html',
-    directives: const [CORE_DIRECTIVES]
+    selector: 'workspace',
+    templateUrl: 'workspace.html',
+    directives: const [CORE_DIRECTIVES, InputGadget, Md5Gadget]
 )
-class InputGadget extends BaseGadget {
-    /// This gadget outputs the value of its embedded text field.
-    @Input()
-    GadgetPipe output;
+class Workspace {
+    GadgetPipe pipe1, pipe2;
 
-    /// Hooked to ngModelChange
-    void setInput(String value) {
-        this.send(this.output, value.codeUnits);
+    /// Constructor
+    Workspace() {
+        this.pipe1 = new GadgetPipe();
+        this.pipe2 = new GadgetPipe();
     }
 }
