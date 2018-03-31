@@ -19,5 +19,5 @@ import 'package:angular/angular.dart';
 import 'package:encoding_tools/encoding_tools.dart';
 
 void main() {
-  bootstrap(AppComponent);
+    bootstrap(AppComponent);
 }

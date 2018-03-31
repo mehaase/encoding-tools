@@ -1,3 +1,5 @@
-<div>
-    Output: {{digest}}
+<div class='header'>MD5</div>
+<div class='content'>
+    <div *ngIf='digest==null'><em>No data</em></div>
+    <div *ngIf='digest!=null' class='user-select'>{{digest}}</div>
 </div>

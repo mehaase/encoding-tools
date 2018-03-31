@@ -23,6 +23,7 @@ import '../model/gadget.dart';
 @Component(
     selector: 'md5-gadget',
     templateUrl: 'md5.html',
+    styleUrls: const ['gadget-base.css', 'gadget-transform.css'],
     directives: const [CORE_DIRECTIVES]
 )
 class Md5Gadget extends BaseGadget implements OnChanges {
@@ -34,13 +35,18 @@ class Md5Gadget extends BaseGadget implements OnChanges {
     @Input()
     GadgetPipe output;
 
-    String digest;
+    String digest = null;
 
     /// Calculate MD5 digest of the input.
     void transform(List<int> data) {
-        var hashBytes = md5.convert(data).bytes;
-        this.digest = hex.encode(hashBytes);
-        this.send(this.output, hashBytes);
+        if (data.length > 0) {
+            var hashBytes = md5.convert(data).bytes;
+            this.digest = hex.encode(hashBytes);
+            this.send(this.output, hashBytes);
+        } else {
+            this.digest = null;
+            this.send(this.output, []);
+        }
     }
 
     /// Wire up the inputs and outputs.

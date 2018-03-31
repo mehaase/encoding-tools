@@ -26,6 +26,7 @@ final Logger log = new Logger('app');
 @Component(
     selector: 'app',
     templateUrl: 'app.html',
+    styleUrls: const ['app.css'],
     directives: const [CORE_DIRECTIVES, Workspace]
 )
 class AppComponent

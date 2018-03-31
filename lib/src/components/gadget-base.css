@@ -1,0 +1,13 @@
+:host {
+    display: inline-block;
+    width: 20rem;
+}
+
+:host .header {
+    cursor: move;
+    padding-left: 0.5rem;
+}
+
+:host .content {
+    padding: 0.75rem 0.5rem;
+}

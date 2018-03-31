@@ -1,0 +1,8 @@
+:host {
+    border: 0.1rem solid var(--green);
+}
+
+:host .header {
+    cursor: move;
+    background-color: var(--green);
+}

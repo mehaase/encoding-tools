@@ -20,10 +20,13 @@ import '../components/input.dart';
 import '../components/md5.dart';
 import '../model/gadget.dart';
 
+const String DEFAULT_MARGIN='25px';
+
 /// Manages the entire workspace.
 @Component(
     selector: 'workspace',
     templateUrl: 'workspace.html',
+    styleUrls: const ['workspace.css'],
     directives: const [CORE_DIRECTIVES, InputGadget, Md5Gadget]
 )
 class Workspace {

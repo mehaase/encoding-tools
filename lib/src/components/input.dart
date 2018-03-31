@@ -21,6 +21,7 @@ import '../model/gadget.dart';
 @Component(
     selector: 'input-gadget',
     templateUrl: 'input.html',
+    styleUrls: const ['gadget-base.css', 'gadget-input.css'],
     directives: const [CORE_DIRECTIVES]
 )
 class InputGadget extends BaseGadget {
