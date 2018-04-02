@@ -36,19 +36,19 @@ class BaseGadget {
         var offset = startEvent.offset + workspaceEl.offset.topLeft;
 
         var moveListener = document.onMouseMove.listen((MouseEvent moveEvent) {
-            this.moveTo(moveEvent.client - offset);
+            this.moveToPoint(moveEvent.client - offset);
         });
 
         document.onMouseUp.take(1).listen((MouseEvent finishEvent) {
-            this.moveTo(finishEvent.client - offset);
+            this.moveToPoint(finishEvent.client - offset);
             moveListener.cancel();
         });
     }
 
-    /// Position the element absolutely
+    /// Position the element absolutely.
     ///
     /// If snap is non-null, then round off to nearest multiple of `snap`.
-    void moveTo(Point p, {int snap: 20}) {
+    void moveToPoint(Point p, {int snap: 20}) {
         var x = p.x;
         var y = p.y;
         if (snap != null) {
@@ -56,6 +56,13 @@ class BaseGadget {
             y = (y / snap).round() * snap;
         }
         this._position = new Point(x, y);
+    }
+
+    /// Position the element absolutely.
+    ///
+    /// If snap is non-null, then round off to nearest multiple of `snap`.
+    void moveToXY(num x, num y, {int snap: 20}) {
+        this.moveToPoint(new Point(x, y), snap: snap);
     }
 
     /// When an input pipe changes, disconnect the consumer from the old

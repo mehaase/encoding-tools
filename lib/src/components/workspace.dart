@@ -14,6 +14,8 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async';
+
 import 'package:angular/angular.dart';
 
 import '../components/input.dart';
@@ -29,12 +31,34 @@ const String DEFAULT_MARGIN='25px';
     styleUrls: const ['workspace.css'],
     directives: const [CORE_DIRECTIVES, InputGadget, Md5Gadget]
 )
-class Workspace {
+class Workspace implements AfterViewInit {
     GadgetPipe pipe1, pipe2;
+
+    @ViewChildren(InputGadget)
+    QueryList<InputGadget> inputGadgets;
+
+    @ViewChildren(Md5Gadget)
+    QueryList<Md5Gadget> md5Gadgets;
 
     /// Constructor
     Workspace() {
         this.pipe1 = new GadgetPipe();
         this.pipe2 = new GadgetPipe();
+    }
+
+    /// Perform initial placement of components.
+    void ngAfterViewInit() {
+        new Future(() {
+            var x = 20;
+            var y = 20;
+            for (var gadget in this.inputGadgets) {
+                gadget.moveToXY(x, y);
+                y += 140;
+            }
+            for (var gadget in this.md5Gadgets) {
+                gadget.moveToXY(x, y);
+                y += 100;
+            }
+        });
     }
 }
