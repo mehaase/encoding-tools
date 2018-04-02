@@ -1,4 +1,4 @@
-<div class='header'>MD5</div>
+<div class='header' (mousedown)='startMove($event)'>MD5</div>
 <div class='content'>
     <div *ngIf='digest==null'><em>No data</em></div>
     <div *ngIf='digest!=null' class='user-select'>{{digest}}</div>

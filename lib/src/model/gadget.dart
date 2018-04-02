@@ -14,10 +14,50 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:math';
+import 'dart:html';
+
 import 'package:angular/angular.dart';
 
 /// Base class for gadgets that implements some shared functionality.
 class BaseGadget {
+    @HostBinding('style.left')
+    String get left => '${this._position.x}px';
+
+    @HostBinding('style.top')
+    String get top => '${this._position.y}px';
+
+    /// Used for moving gadgets around in the workspace.
+    Point _position = const Point(20, 20);
+
+    /// Used for moving gadgets around in the workspace.
+    void startMove(MouseEvent startEvent) {
+        var workspaceEl = (startEvent.target as Element).closest('workspace');
+        var offset = startEvent.offset + workspaceEl.offset.topLeft;
+
+        var moveListener = document.onMouseMove.listen((MouseEvent moveEvent) {
+            this.moveTo(moveEvent.client - offset);
+        });
+
+        document.onMouseUp.take(1).listen((MouseEvent finishEvent) {
+            this.moveTo(finishEvent.client - offset);
+            moveListener.cancel();
+        });
+    }
+
+    /// Position the element absolutely
+    ///
+    /// If snap is non-null, then round off to nearest multiple of `snap`.
+    void moveTo(Point p, {int snap: 20}) {
+        var x = p.x;
+        var y = p.y;
+        if (snap != null) {
+            x = (x / snap).round() * snap;
+            y = (y / snap).round() * snap;
+        }
+        this._position = new Point(x, y);
+    }
+
     /// When an input pipe changes, disconnect the consumer from the old
     /// pipe and attach it to the new pipe.
     void rewire(SimpleChange change, GadgetPipeConsumer consumer) {

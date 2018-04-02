@@ -1,6 +1,8 @@
 :host {
+    position: absolute;
     display: inline-block;
     width: 20rem;
+    background: white;
 }
 
 :host .header {
