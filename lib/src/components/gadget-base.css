@@ -1,15 +1,56 @@
+/* Gadgets */
+
 :host {
     position: absolute;
     display: inline-block;
     width: 20rem;
     background: white;
+    border: 0.1rem solid var(--gadget-color);
 }
 
 :host .header {
     cursor: move;
     padding-left: 0.5rem;
+    background-color: var(--gadget-color);
 }
 
 :host .content {
     padding: 0.75rem 0.5rem;
+}
+
+/* Ports */
+
+:host .input-port, :host .output-port {
+    cursor: crosshair;
+    position: absolute;
+    width: 1rem;
+    height: 0.6rem;
+    border: 0.1rem solid var(--gadget-color);
+}
+
+:host .input-port {
+    top: -0.6rem;
+    background-color: var(--gadget-color);
+}
+
+:host .output-port {;
+    bottom: -0.6rem;
+    border-top: none;
+    background-color: white;
+}
+
+:host .port0 {
+    left: 1rem;
+}
+
+:host .port1{
+    left: 3rem;
+}
+
+:host .port2 {
+    left: 5rem;
+}
+
+:host .port3 {
+    left: 7rem;
 }

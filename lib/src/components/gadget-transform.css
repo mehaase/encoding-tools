@@ -1,8 +1,3 @@
 :host {
-    border: 0.1rem solid var(--orange);
-}
-
-:host .header {
-    cursor: move;
-    background-color: var(--orange);
+    --gadget-color: var(--orange);
 }
