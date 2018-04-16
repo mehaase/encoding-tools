@@ -20,16 +20,15 @@ import 'package:angular/angular.dart';
 
 import '../components/input.dart';
 import '../components/md5.dart';
+import '../components/pipe.dart';
 import '../model/gadget.dart';
-
-const String DEFAULT_MARGIN='25px';
 
 /// Manages the entire workspace.
 @Component(
     selector: 'workspace',
     templateUrl: 'workspace.html',
     styleUrls: const ['workspace.css'],
-    directives: const [CORE_DIRECTIVES, InputGadget, Md5Gadget]
+    directives: const [CORE_DIRECTIVES, InputGadget, Md5Gadget, PipeSvg]
 )
 class Workspace implements AfterViewInit {
     GadgetPipe pipe1, pipe2;
@@ -53,11 +52,13 @@ class Workspace implements AfterViewInit {
             var y = 20;
             for (var gadget in this.inputGadgets) {
                 gadget.moveToXY(x, y);
-                y += 140;
+                x += 40;
+                y += 200;
             }
             for (var gadget in this.md5Gadgets) {
                 gadget.moveToXY(x, y);
-                y += 100;
+                x += 40;
+                y += 160;
             }
         });
     }

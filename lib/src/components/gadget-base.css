@@ -1,11 +1,15 @@
 /* Gadgets */
 
 :host {
+    --border-width: 2px;
+    --port-height: 15px;
+
+    z-index: 1;
     position: absolute;
     display: inline-block;
-    width: 20rem;
+    width: 320px;
     background: white;
-    border: 0.1rem solid var(--gadget-color);
+    border: var(--border-width) solid var(--gadget-color);
 }
 
 :host .header {
@@ -23,34 +27,49 @@
 :host .input-port, :host .output-port {
     cursor: crosshair;
     position: absolute;
-    width: 1rem;
-    height: 0.6rem;
-    border: 0.1rem solid var(--gadget-color);
+    z-index: -1;
+    width: var(--cell-width);
+    height: var(--port-height);
+    border: var(--border-width) solid var(--gadget-color);
 }
 
 :host .input-port {
-    top: -0.6rem;
+    top: calc(-1 * var(--cell-width) * 0.75);
+    border-top-left-radius: 30%;
+    border-top-right-radius: 30%;
     background-color: var(--gadget-color);
 }
 
+:host .input-port:hover {
+    border-color: blue;
+    background-color: blue;
+}
+
 :host .output-port {;
-    bottom: -0.6rem;
+    bottom: calc(-1 * var(--cell-width) * 0.75);
     border-top: none;
+    border-bottom-left-radius: 30%;
+    border-bottom-right-radius: 30%;
     background-color: white;
 }
 
+:host .output-port:hover {;
+    border-color: blue;
+    background-color: blue;
+}
+
 :host .port0 {
-    left: 1rem;
+    left: calc(var(--cell-width) - var(--border-width));
 }
 
 :host .port1{
-    left: 3rem;
+    left: calc(var(--cell-width) * 3 - var(--border-width));
 }
 
 :host .port2 {
-    left: 5rem;
+    left: calc(var(--cell-width) * 5 - var(--border-width));
 }
 
 :host .port3 {
-    left: 7rem;
+    left: calc(var(--cell-width) * 7 - var(--border-width));
 }

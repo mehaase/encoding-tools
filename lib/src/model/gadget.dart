@@ -36,7 +36,7 @@ class BaseGadget {
         var offset = startEvent.offset + workspaceEl.offset.topLeft;
 
         var moveListener = document.onMouseMove.listen((MouseEvent moveEvent) {
-            this.moveToPoint(moveEvent.client - offset);
+            this.moveToPoint(moveEvent.client - offset, snap: null);
         });
 
         document.onMouseUp.take(1).listen((MouseEvent finishEvent) {

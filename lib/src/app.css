@@ -1,12 +1,17 @@
 :host {
     display: block;
+    --cell-width: 20px;
+}
+
+nav {
+    height: calc(var(--cell-width) * 3);
 }
 
 .footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 1.6rem;
+    height: 20px;
 }
 
 .footer span {
