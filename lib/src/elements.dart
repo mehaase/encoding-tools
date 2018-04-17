@@ -14,23 +14,19 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import 'package:angular/angular.dart';
+import 'dart:html';
+import 'dart:svg';
 
-import '../model/gadget.dart';
+// Shortcuts for creating HTML elements.
+Function $a = () => new Element.tag('a');
+Function $em = () => new Element.tag('em');
+Function $i = () => new Element.tag('i');
+Function $div = () => new Element.tag('div');
+Function $nav = () => new Element.tag('nav');
+Function $pre = () => new Element.tag('pre');
+Function $span = () => new Element.tag('span');
+Function $textarea = () => new Element.tag('textarea');
 
-@Component(
-    selector: 'input-gadget',
-    templateUrl: 'input.html',
-    styleUrls: const ['gadget-base.css', 'gadget-input.css'],
-    directives: const [CORE_DIRECTIVES]
-)
-class InputGadget extends BaseGadget {
-    /// This gadget outputs the value of its embedded text field.
-    @Input()
-    GadgetPipe output;
-
-    /// Hooked to ngModelChange
-    void setInput(String value) {
-        this.send(this.output, value.codeUnits);
-    }
-}
+// Shortcuts for creating SVG elements.
+Function $path = () => new SvgElement.tag('path');
+Function $svg = () => new SvgElement.tag('svg');

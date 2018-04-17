@@ -1,3 +1,0 @@
-<svg [attr.width]='width' [attr.height]='height'>
-    <path id='pipe' d='M10,10 L50,70'/>
-</svg>

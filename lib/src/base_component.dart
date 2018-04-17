@@ -14,33 +14,15 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import 'dart:math';
+import 'dart:html';
 
-import 'package:angular/angular.dart';
+/// Base class for components.
+abstract class BaseComponent {
+    /// Override this method to attach this component to a specified point
+    /// in the DOM.
+    void mount(Element domEl);
 
-/// A visual representation of a pipe between gadgets.
-@Component(
-    selector: 'pipe',
-    templateUrl: 'pipe.svg',
-    styleUrls: const ['pipe.css'],
-    directives: const [CORE_DIRECTIVES]
-)
-class PipeSvg {
-    @HostBinding('style.left')
-    String get left => '${_rect.left}px';
-
-    @HostBinding('style.top')
-    String get top => '${_rect.top}px';
-
-    @HostBinding('style.width')
-    String get width => '${_rect.width}px';
-
-    @HostBinding('style.width')
-    String get height => '${_rect.height}px';
-
-    Rectangle _rect = const Rectangle(40, 140, 60, 100);
-
-    PipeSvg() {
-        print('${width} x $height');
-    }
+    /// Optionally override this method to remove the element from the DOM and
+    /// do cleanup.
+    void unmount() {}
 }

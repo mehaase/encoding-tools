@@ -15,33 +15,13 @@
           rel="stylesheet">
     <script defer src='main.dart' type='application/dart'></script>
     <script defer src='packages/browser/dart.js'></script>
-    <style type="text/css">
-      body {
-        font-family: 'Share Tech', sans-serif;
-        user-select: none;
-      }
-      pre {
-        font-family: 'Share Tech Mono', monospace;
-      }
-      .loader {
-        position: fixed;
-        top: 0; left: 0; bottom: 0; right: 0;
-        padding-top: 10rem;
-        font-size: 24pt;
-      }
-      .user-select {
-        user-select: text;
-        cursor: text;
-      }
-      .user-select-all {
-        user-select: all;
-        cursor: text;
-      }
-    </style>
+    <link rel='stylesheet' type='text/css' href='/css/main.css'>
   </head>
   <body>
-    <app class='container-fluid'>
-      <div class='loader text-center bg-light'><i class='fas fa-spinner fa-pulse'></i> Loading…</div>
+    <div id='app'>
+      <div class='loader text-center bg-light'>
+        <i class='fas fa-spinner fa-pulse'></i> Loading…
+      </div>
     </app>
   </body>
 </html>

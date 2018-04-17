@@ -16,21 +16,18 @@
 
 import 'dart:html';
 
-import 'package:angular/angular.dart';
 import 'package:logging/logging.dart';
 
-import 'components/workspace.dart';
+import 'base_component.dart';
+import 'elements.dart';
+import 'workspace.dart';
 
 final Logger log = new Logger('app');
 
-@Component(
-    selector: 'app',
-    templateUrl: 'app.html',
-    styleUrls: const ['app.css'],
-    directives: const [CORE_DIRECTIVES, Workspace]
-)
-class AppComponent
+class AppComponent extends BaseComponent
 {
+    Workspace workspace;
+
     /// Constructor.
     AppComponent() {
         Logger.root.level = Level.ALL;
@@ -40,5 +37,33 @@ class AppComponent
                 ' ${rec.loggerName}: ${rec.message}'
             );
         });
+
+        this.workspace = new Workspace();
+    }
+
+    /// Create and mount the application component.
+    void mount(Element parent) {
+        var workspaceEl = $div()..id = 'workspace';
+
+        // Clear the loading message.
+        while (parent.firstChild != null) {
+            parent.firstChild.remove();
+        }
+
+        // Mount the application component.
+        parent
+            ..append(
+                $nav()
+                ..className = 'navbar navbar-expand-lg navbar-light bg-light border-bottom'
+                ..append(
+                    $span()
+                    ..className='navbar-brand'
+                    ..appendText('Encoding Tools ')
+                    ..append($i()..className = 'fas fa-wrench')
+                )
+            )
+            ..append(workspaceEl);
+
+        this.workspace.mount(workspaceEl);
     }
 }

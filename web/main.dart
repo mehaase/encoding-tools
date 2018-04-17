@@ -14,10 +14,15 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import 'package:angular/angular.dart';
+import 'dart:html';
 
 import 'package:encoding_tools/encoding_tools.dart';
 
+/// Main entry point.
+///
+/// Instantiate an application component and mount it to the div#app element.
 void main() {
-    bootstrap(AppComponent);
+    var app = new AppComponent();
+    var appEl = document.querySelector('div#app');
+    app.mount(appEl);
 }

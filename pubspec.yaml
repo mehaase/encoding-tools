@@ -5,19 +5,15 @@ environment:
   sdk: '>=1.12.0 <2.0.0'
 
 dependencies:
-  angular: '^4.0.0'
   convert: '^2.0.1'
   crypto: '^2.0.2'
   logging: '^0.11.3'
-  uuid: '^0.5.3' # TODO remove?
 
 dev_dependencies:
   browser: ^0.10.0
   dart_to_js_script_rewriter: ^1.0.1
 
 transformers:
-- angular:
-    entry_points: web/main.dart
 - dart_to_js_script_rewriter
 
 web:
