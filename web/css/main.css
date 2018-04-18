@@ -150,6 +150,7 @@ svg.pipe {
     z-index: 0;
     display: inline-block;
     position: absolute;
+    border: 1px solid red;
 }
 
 svg.pipe path {

@@ -30,51 +30,41 @@ class Pipe extends BaseComponent {
     /// The line.
     svg.PathElement _path;
 
-    /// The pipe's start and end points in grid coordinates.
+    /// The pipe's endpoints in pixel coordinates.
     math.Point _start, _end;
 
     /// Constructor.
-    Pipe() {
+    Pipe(this._start, this._end) {
         this._path = $path()
             ..id = 'pipe';
 
         this._root = $svg()
             ..classes.add('pipe')
-            ..attributes['width'] = '60px'
-            ..attributes['height'] = '40px'
             ..append(this._path);
     }
 
-    /// Move the pipe's start and end point to the given grid coordinates.
-    ///
-    /// Note that the pipe is placed in the _middle_ of the given grid cell, not
-    /// in the top left corner.
-    void moveToGrid(math.Point start, math.Point end) {
+    /// Move the pipe's endpoints to the given pixel coordinates.
+    void moveTo(math.Point start, math.Point end) {
         this._start = start;
         this._end = end;
-        this._updateRect();
+        this._render();
     }
 
-    /// Move the pipe's start point to the given grid coordinates.
-    ///
-    /// Note that the pipe is placed in the _middle_ of the given grid cell, not
-    /// in the top left corner.
-    void moveStartToGrid(math.Point start) {
+    /// Move the pipe's start point to the given pixel coordinates.
+    void moveStartTo(math.Point start) {
         this._start = start;
-        this._updateRect();
+        this._render();
     }
 
-    /// Move the pipe's end point to the given grid coordinates.
-    ///
-    /// Note that the pipe is placed in the _middle_ of the given grid cell, not
-    /// in the top left corner.
-    void moveEndToGrid(math.Point end) {
+    /// Move the pipe's end point to the given pixel coordinates.
+    void moveEndTo(math.Point end) {
         this._end = end;
-        this._updateRect();
+        this._render();
     }
 
     /// Mount this pipe to the DOM.
     void mount(html.Element parent) {
+        this._render();
         parent.append(this._root);
     }
 
@@ -83,14 +73,15 @@ class Pipe extends BaseComponent {
         this._root.remove();
     }
 
-    /// Set SVG bounding box based on start and end points.
-    void _updateRect() {
+    /// Set SVG bounding box and draw path between endpoints.
+    void _render() {
+        var boxPadding = 10;
         var rect = new math.Rectangle.fromPoints(this._start, this._end);
 
-        var top =  rect.top * GRID_SIZE;
-        var left = rect.left * GRID_SIZE;
-        var width =  (rect.width + 1) * GRID_SIZE;
-        var height =  (rect.height + 1) * GRID_SIZE;
+        var top =  rect.top - boxPadding;
+        var left = rect.left - boxPadding;
+        var width =  rect.width + (2 * boxPadding);
+        var height =  rect.height + (2 * boxPadding);
 
         this._root
             ..attributes['width'] = '${width}px'
@@ -98,10 +89,10 @@ class Pipe extends BaseComponent {
             ..style.top = '${top}px'
             ..style.left = '${left}px';
 
-        var x1 = ((this._start.x - rect.left) * GRID_SIZE) + (GRID_SIZE / 2);
-        var y1 = ((this._start.y - rect.top)  * GRID_SIZE) + (GRID_SIZE / 2);
-        var x2 = ((this._end.x   - rect.left) * GRID_SIZE) + (GRID_SIZE / 2);
-        var y2 = ((this._end.y   - rect.top)  * GRID_SIZE) + (GRID_SIZE / 2);
+        var x1 = this._start.x - left;
+        var y1 = this._start.y - top;
+        var x2 = this._end.x - left;
+        var y2 = this._end.y - top;
         this._path.attributes['d'] = 'M${x1},${y1} L${x2},${y2}';
     }
 }

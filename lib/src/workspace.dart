@@ -25,8 +25,42 @@ import 'gadgets/pipe.dart';
 
 /// A view container for gadgets..
 class Workspace extends BaseComponent {
+    /// The div container for the workspace.
+    Element root;
+
+    /// Represents a pipe that is currently being created, or null if no pipe is
+    /// being created.
+    Pipe _newPipe;
+
+    /// When a pipe is being created, this points to the port where the pipe
+    /// begins, or null if no pipe is being created. It's either an `InputPort`
+    /// or an `OutputPort`.
+    dynamic _newPipePort;
+
+    /// Keep track of all pipes in the workspace.
+    List<Pipe> _pipes;
+
+    /// Subscription to start-pipe events on ports.
+    StreamSubscription<Event> _startPipeSubscription;
+
+    /// Subscription to finish-pipe events on ports.
+    StreamSubscription<Event> _finishPipeSubscription;
+
+    /// Subscription to mouse-move events in the workspace. Only subscribed to
+    /// during pipe creation.
+    StreamSubscription<MouseEvent> _mouseMoveSubscription;
+
+    /// Subscription to mouse-up events in the workspace.
+    StreamSubscription<MouseEvent> _mouseUpSubscription;
+
+    /// Constructor.
+    Workspace() {
+        this._pipes = [];
+    }
+
     /// Create and mount the workspace component.
     void mount(Element parent) {
+        this.root = parent;
         var inputGadget = new InputGadget();
         inputGadget.moveToGrid(new Point(1, 1));
         inputGadget.mount(parent);
@@ -39,15 +73,60 @@ class Workspace extends BaseComponent {
         md5Gadget2.moveToGrid(new Point(1, 15));
         md5Gadget2.mount(parent);
 
-        md5Gadget1.in0.connect(inputGadget.out0);
-        md5Gadget2.in0.connect(md5Gadget1.out0);
+        this._startPipeSubscription = parent.on['startPipe'].listen(
+            this._onStartPipe);
+        this._finishPipeSubscription = parent.on['finishPipe'].listen(
+            this._onFinishPipe);
+        this._mouseUpSubscription = parent.onMouseUp.listen(this._onMouseUp);
+    }
 
-        var pipe1 = new Pipe();
-        pipe1.moveToGrid(new Point(2, 7), new Point(4, 8));
-        pipe1.mount(parent);
+    /// Remove the workspace from the DOM.
+    void unmount() {
+        this._startPipeSubscription.cancel();
+        this._startPipeSubscription = null;
+        this._finishPipeSubscription.cancel();
+        this._finishPipeSubscription = null;
+        super.unmount();
+    }
 
-        var pipe2 = new Pipe();
-        pipe2.moveToGrid(new Point(4, 13), new Point(2, 14));
-        pipe2.mount(parent);
+    /// Handle a start-pipe event on a port.
+    void _onStartPipe(Event event) {
+        event.stopPropagation();
+        var portEventData = (event as CustomEvent).detail;
+        var workspaceRect = this.root.offset;
+        var endpoint = portEventData.center - workspaceRect.topLeft;
+        this._newPipe = new Pipe(endpoint, endpoint)..mount(this.root);
+        this._newPipePort = portEventData.port;
+        this._mouseMoveSubscription = this.root.onMouseMove.listen((mouseEvent) {
+            this._newPipe.moveEndTo(mouseEvent.page - workspaceRect.topLeft);
+        });
+    }
+
+    /// Handle a finish-pipe event on a port.
+    void _onFinishPipe(Event event) {
+        event.stopPropagation();
+        var portEventData = (event as CustomEvent).detail;
+        var workspaceRect = this.root.offset;
+        var endpoint = portEventData.center - workspaceRect.topLeft;
+        this._newPipe.moveEndTo(endpoint);
+        portEventData.port.connect(this._newPipePort);
+        this._pipes.add(this._newPipe);
+        this._newPipe = null;
+        this._newPipePort = null;
+        this._mouseMoveSubscription.cancel();
+        this._mouseMoveSubscription = null;
+   }
+
+    /// Handle mouse-up events in the workspace.
+    ///
+    /// If a mouse-up occurs while creating a new pipe, that means the pipe
+    /// was not connected to a valid port. Remove the pipe and clean up the
+    /// listeners.
+    void _onMouseUp(MouseEvent event) {
+        this._newPipe?.unmount();
+        this._newPipe = null;
+        this._newPipePort = null;
+        this._mouseMoveSubscription?.cancel();
+        this._mouseMoveSubscription = null;
     }
 }
