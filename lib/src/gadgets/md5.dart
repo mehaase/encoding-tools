@@ -90,7 +90,9 @@ class Md5Gadget extends BaseGadget {
         if (digest == null) {
             data = $em()..appendText('null');
         } else {
-            data = $pre()..appendText(digest);
+            data = $pre()
+                ..className = 'user-select'
+                ..appendText(digest);
         }
 
         this.display

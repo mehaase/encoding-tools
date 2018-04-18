@@ -19,6 +19,7 @@ import 'dart:html';
 
 import 'base_component.dart';
 import 'elements.dart';
+import 'gadgets/base_gadget.dart';
 import 'gadgets/input.dart';
 import 'gadgets/md5.dart';
 import 'gadgets/pipe.dart';
@@ -97,6 +98,11 @@ class Workspace extends BaseComponent {
         var endpoint = portEventData.center - workspaceRect.topLeft;
         this._newPipe = new Pipe(endpoint, endpoint)..mount(this.root);
         this._newPipePort = portEventData.port;
+        if (this._newPipePort is InputPort) {
+            this.root.classes.add('highlight-output-ports');
+        } else if (this._newPipePort is OutputPort) {
+            this.root.classes.add('highlight-available-input-ports');
+        }
         this._mouseMoveSubscription = this.root.onMouseMove.listen((mouseEvent) {
             this._newPipe.moveEndTo(mouseEvent.page - workspaceRect.topLeft);
         });
@@ -104,17 +110,36 @@ class Workspace extends BaseComponent {
 
     /// Handle a finish-pipe event on a port.
     void _onFinishPipe(Event event) {
+        /// Cleanup pipe-creation state.
         event.stopPropagation();
         var portEventData = (event as CustomEvent).detail;
         var workspaceRect = this.root.offset;
         var endpoint = portEventData.center - workspaceRect.topLeft;
-        this._newPipe.moveEndTo(endpoint);
-        portEventData.port.connect(this._newPipePort);
-        this._pipes.add(this._newPipe);
+
+        /// Make the connection.
+        var start = this._newPipePort;
+        var end = portEventData.port;
+        if (start is InputPort && end is OutputPort) {
+            /// Switch the ports so that `start` is an output.
+            var temp = start;
+            start = end;
+            end = temp;
+        }
+
+        if (start is OutputPort && end is InputPort) {
+            end.connect(start);
+            this._newPipe.moveEndTo(endpoint);
+            this._pipes.add(this._newPipe);
+        } else {
+            this._newPipe.unmount();
+        }
+
         this._newPipe = null;
         this._newPipePort = null;
         this._mouseMoveSubscription.cancel();
         this._mouseMoveSubscription = null;
+        this.root.classes.remove('highlight-output-ports');
+        this.root.classes.remove('highlight-available-input-ports');
    }
 
     /// Handle mouse-up events in the workspace.
@@ -128,5 +153,7 @@ class Workspace extends BaseComponent {
         this._newPipePort = null;
         this._mouseMoveSubscription?.cancel();
         this._mouseMoveSubscription = null;
+        this.root.classes.remove('highlight-output-ports');
+        this.root.classes.remove('highlight-available-input-ports');
     }
 }

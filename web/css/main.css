@@ -52,6 +52,7 @@ div#workspace {
     left: 0;
     bottom: 0;
     right: 0;
+    overflow: auto;
 
     background-image: url(/img/grid.png);
     background-repeat: repeat;
@@ -81,6 +82,11 @@ div.gadget .content {
     padding: 0.75rem 0.5rem;
 }
 
+div.gadget .content pre {
+    padding: 5px;
+    margin-bottom: 0;
+}
+
 div.input-gadget {
     --gadget-color: var(--green);
     height: calc(var(--cell-size) * 6);
@@ -94,7 +100,6 @@ div.transform-gadget {
 /* Ports */
 
 div.input-port, div.output-port {
-    cursor: crosshair;
     position: absolute;
     z-index: -1;
     width: var(--cell-size);
@@ -109,7 +114,8 @@ div.input-port {
     background-color: var(--gadget-color);
 }
 
-div.input-port:hover {
+div#workspace:not(.highlight-output-ports) div.input-port:not(.connected):hover {
+    cursor: crosshair;
     border-color: blue;
     background-color: blue;
 }
@@ -122,7 +128,8 @@ div.output-port {
     background-color: white;
 }
 
-div.output-port:hover {;
+div#workspace:not(.highlight-available-input-ports) div.output-port:hover {;
+    cursor: crosshair;
     border-color: blue;
     background-color: blue;
 }
@@ -143,6 +150,16 @@ div.input-port.port3, div.output-port.port3 {
     left: calc(var(--cell-size) * 7 - var(--border-width));
 }
 
+div#workspace.highlight-available-input-ports div.input-port:not(.connected) {
+    border-color: lightblue;
+    background-color: lightblue;
+}
+
+div#workspace.highlight-output-ports div.output-port {
+    border-color: lightblue;
+    background-color: lightblue;
+}
+
 /* Pipes */
 
 svg.pipe {
@@ -150,7 +167,6 @@ svg.pipe {
     z-index: 0;
     display: inline-block;
     position: absolute;
-    border: 1px solid red;
 }
 
 svg.pipe path {

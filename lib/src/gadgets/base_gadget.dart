@@ -16,6 +16,7 @@
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:math' as math;
 
 import '../base_component.dart';
 import '../elements.dart';
@@ -76,6 +77,8 @@ abstract class BaseGadget extends BaseComponent {
             top = (top / GRID_SIZE).round() * GRID_SIZE;
             left = (left / GRID_SIZE).round() * GRID_SIZE;
         }
+        top = math.max(0, top);
+        left = math.max(0, left);
         this.root.style.top = '${top}px';
         this.root.style.left = '${left}px';
     }
@@ -129,6 +132,7 @@ class InputPort extends BaseComponent {
                 'Cannot connect input port; it is already connected');
         }
         this._subscription = out.stream.listen(this._handler);
+        this._div.classes.add('connected');
     }
 
     /// Disconnect this input from its currently attached output port.
@@ -139,6 +143,7 @@ class InputPort extends BaseComponent {
         }
         this._subscription.cancel();
         this._subscription = null;
+        this._div.classes.remove('connected');
     }
 
     /// Mount this port to the DOM.
@@ -170,6 +175,9 @@ class InputPort extends BaseComponent {
     /// Handles mouse down events on this port by emitting a mouseDownOnPort
     /// event.
     void _onMouseDown(MouseEvent event) {
+        if (event.button != 0 || this.connected) {
+            return;
+        }
         event.stopPropagation();
         var center = this._getCenter();
         var ped = new PortEventData(this, center, event);
@@ -237,13 +245,6 @@ class OutputPort extends BaseComponent {
         this.stream = this._controller.stream;
     }
 
-    /// Connect this output to the specified input port.
-    ///
-    /// Just a simple wrapper around `InputPort#connect()`.
-    void connect(InputPort in_) {
-        in_.connect(this);
-    }
-
     /// Mount this port to the DOM.
     void mount(Element parent) {
         this._div = $div()..className = 'output-port port${_portNum}';
@@ -275,6 +276,9 @@ class OutputPort extends BaseComponent {
     /// Handles mouse down events on this port by emitting a mouseDownOnPort
     /// event.
     void _onMouseDown(MouseEvent event) {
+        if (event.button != 0) {
+            return;
+        }
         event.stopPropagation();
         var center = this._getCenter();
         var ped = new PortEventData(this, center, event);
