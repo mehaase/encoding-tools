@@ -19,11 +19,9 @@ import 'dart:html';
 
 import '../elements.dart';
 import 'base_gadget.dart';
+import 'port.dart';
 
 class InputGadget extends BaseGadget {
-    /// Writes data from textarea to out0.
-    OutputPort out0;
-
     /// The textarea that contains the user's input.
     TextAreaElement textarea;
 
@@ -55,7 +53,7 @@ class InputGadget extends BaseGadget {
 
     /// Mount this gadget to its parent.
     void mount(Element parent) {
-        this.out0 = new OutputPort(0)..mount(this.root);
+        this.outputs = [new OutputPort(0)..mount(this.root)];
         parent.append(this.root);
         super.mount(parent);
     }
@@ -64,7 +62,6 @@ class InputGadget extends BaseGadget {
     void unmount() {
         this._keyboardSubscription.cancel();
         this._keyboardSubscription = null;
-        this.out0.unmount();
         super.unmount();
     }
 
@@ -72,6 +69,6 @@ class InputGadget extends BaseGadget {
     void _handleKeyboard(KeyboardEvent event) {
         var value = this.textarea.value;
         var data = value?.length == 0 ? null : value.codeUnits;
-        this.out0.send(data);
+        this.outputs[0].send(data);
     }
 }

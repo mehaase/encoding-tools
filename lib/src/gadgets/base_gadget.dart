@@ -20,6 +20,7 @@ import 'dart:math' as math;
 
 import '../base_component.dart';
 import '../elements.dart';
+import 'port.dart';
 
 const int GRID_SIZE = 20;
 
@@ -28,6 +29,8 @@ abstract class BaseGadget extends BaseComponent {
     Element header;
     Element root;
     StreamSubscription<MouseEvent> dragEvents;
+    List<InputPort> inputs;
+    List<OutputPort> outputs;
 
     /// Used for moving gadgets around in the workspace.
     void startMove(MouseEvent startEvent) {
@@ -36,10 +39,14 @@ abstract class BaseGadget extends BaseComponent {
 
         var moveListener = document.onMouseMove.listen((MouseEvent moveEvent) {
             this.moveToPixel(moveEvent.client - offset);
+            this.inputs?.forEach((input) => input.movePipe());
+            this.outputs?.forEach((output) => output.movePipes());
         });
 
         document.onMouseUp.take(1).listen((MouseEvent finishEvent) {
             this.moveToPixel(finishEvent.client - offset, snap: true);
+            this.inputs?.forEach((input) => input.movePipe());
+            this.outputs?.forEach((output) => output.movePipes());
             moveListener.cancel();
         });
     }
@@ -51,10 +58,10 @@ abstract class BaseGadget extends BaseComponent {
     }
 
     void unmount() {
-        if (this.dragEvents != null) {
-            this.dragEvents.cancel();
-            this.dragEvents = null;
-        }
+        this.dragEvents?.cancel();
+        this.dragEvents = null;
+        this.inputs?.forEach((input) => input.unmount());
+        this.outputs?.forEach((outputs) => outputs.unmount());
         this.root.remove();
         super.unmount();
     }
@@ -81,228 +88,5 @@ abstract class BaseGadget extends BaseComponent {
         left = math.max(0, left);
         this.root.style.top = '${top}px';
         this.root.style.left = '${left}px';
-    }
-}
-
-/// A callback that is invoked when data is received.
-typedef void DataReceivedHandler(List<int> data);
-
-
-/// Encapsulates information about a user interaction with a port.
-class PortEventData {
-    dynamic port;
-    Point center;
-    Event event;
-    PortEventData(this.port, this.center, this.event);
-}
-
-/// Represents an input port on a gadget.
-///
-/// Duplicates a lot of logic in OutputPort, which could probably be refactored.
-class InputPort extends BaseComponent {
-    /// Indicates whether the port is currently connected.
-    bool get connected => this._subscription != null;
-
-    /// The div element depicting this port.
-    DivElement _div;
-
-    /// The port number; currently used only for positioning the port on the
-    /// parent element.
-    int _portNum;
-
-    /// A callback that is invoked for every data event.
-    DataReceivedHandler _handler;
-
-    /// Subscription to an output port's event stream.
-    StreamSubscription<List<int>> _subscription;
-
-    /// Subscription to mouse down events on this port.
-    StreamSubscription<MouseEvent> _mouseDownEvents;
-
-    /// Subscription to mouse up events on this port.
-    StreamSubscription<MouseEvent> _mouseUpEvents;
-
-    /// Constructor
-    InputPort(this._portNum, this._handler);
-
-    /// Connect this input to the specified output port.
-    void connect(OutputPort out) {
-        if (this._subscription != null) {
-            throw new Exception(
-                'Cannot connect input port; it is already connected');
-        }
-        this._subscription = out.stream.listen(this._handler);
-        this._div.classes.add('connected');
-    }
-
-    /// Disconnect this input from its currently attached output port.
-    void disconnect () {
-        if (this._subscription == null) {
-            throw new Exception(
-                'Cannot disconnect input port; it is not connected to anything');
-        }
-        this._subscription.cancel();
-        this._subscription = null;
-        this._div.classes.remove('connected');
-    }
-
-    /// Mount this port to the DOM.
-    void mount(Element parent) {
-        this._div = $div()..className = 'input-port port${_portNum}';
-        this._mouseDownEvents = this._div.onMouseDown.listen(this._onMouseDown);
-        this._mouseUpEvents = this._div.onMouseUp.listen(this._onMouseUp);
-        parent.append(this._div);
-    }
-
-    /// Called when the component is destroyed.
-    void unmount() {
-        /// Clean up connection.
-        if (this.connected) {
-            this.disconnect();
-        }
-
-        /// Clean up event handling.
-        this._mouseDownEvents.cancel();
-        this._mouseDownEvents = null;
-        this._mouseUpEvents.cancel();
-        this._mouseUpEvents = null;
-
-        /// Clean up DOM.
-        this._div.remove();
-        super.unmount();
-    }
-
-    /// Handles mouse down events on this port by emitting a mouseDownOnPort
-    /// event.
-    void _onMouseDown(MouseEvent event) {
-        if (event.button != 0 || this.connected) {
-            return;
-        }
-        event.stopPropagation();
-        var center = this._getCenter();
-        var ped = new PortEventData(this, center, event);
-        var ce = new CustomEvent('startPipe', detail: ped);
-        this._div.dispatchEvent(ce);
-    }
-
-    /// Handles mouse up events on this port by emitting a mouseUpOnPort
-    /// event.
-    void _onMouseUp(MouseEvent event) {
-        event.stopPropagation();
-        var center = this._getCenter();
-        var ped = new PortEventData(this, center, event);
-        var ce = new CustomEvent('finishPipe', detail: ped);
-        this._div.dispatchEvent(ce);
-    }
-
-    /// Return the center point (in pixels) of this port.
-    Point _getCenter() {
-        var portRect = this._div.getBoundingClientRect();
-        var center = new Point(
-            portRect.left + (portRect.width  / 2),
-            portRect.top  + (portRect.height / 2)
-        );
-        return center;
-    }
-}
-
-/// Represents an output port on a gadget.
-///
-/// Duplicates a lot of logic in InputPort, which could probably be refactored.
-class OutputPort extends BaseComponent {
-    /// A stream that input ports may subscribe to receive data from this output
-    /// port.
-    Stream<List<int>> stream;
-
-    /// Contains the last message sent through this port.
-    List<int> _lastMessage;
-
-    /// The div element depicting this port.
-    DivElement _div;
-
-    /// Controls the data stream for this port.
-    StreamController<List<int>> _controller;
-
-    /// Subscription to mouse down events on this port.
-    StreamSubscription<MouseEvent> _mouseDownEvents;
-
-    /// Subscription to mouse up events on this port.
-    StreamSubscription<MouseEvent> _mouseUpEvents;
-
-    /// The port number; currently used only for positioning the port on the
-    /// parent element.
-    int _portNum;
-
-    /// Constructor.
-    OutputPort(this._portNum) {
-        this._controller = new StreamController<List<int>>.broadcast();
-        this._controller.onListen = () {
-            // Resend last message to new listeners.
-            if (this._lastMessage != null) {
-                this._controller.add(this._lastMessage);
-            }
-        };
-        this.stream = this._controller.stream;
-    }
-
-    /// Mount this port to the DOM.
-    void mount(Element parent) {
-        this._div = $div()..className = 'output-port port${_portNum}';
-        this._mouseDownEvents = this._div.onMouseDown.listen(this._onMouseDown);
-        this._mouseUpEvents = this._div.onMouseUp.listen(this._onMouseUp);
-        parent.append(this._div);
-    }
-
-    /// Send data out of this port.
-    void send(List<int> data) {
-        this._lastMessage = data;
-        this._controller.add(data);
-    }
-
-    /// Called when the component is destroyed.
-    void unmount() {
-        /// Clean up events.
-        this._controller.close();
-        this._mouseDownEvents.cancel();
-        this._mouseDownEvents = null;
-        this._mouseUpEvents.cancel();
-        this._mouseUpEvents = null;
-
-        /// Clean up DOM.
-        this._div.remove();
-        super.unmount();
-    }
-
-    /// Handles mouse down events on this port by emitting a mouseDownOnPort
-    /// event.
-    void _onMouseDown(MouseEvent event) {
-        if (event.button != 0) {
-            return;
-        }
-        event.stopPropagation();
-        var center = this._getCenter();
-        var ped = new PortEventData(this, center, event);
-        var ce = new CustomEvent('startPipe', detail: ped);
-        this._div.dispatchEvent(ce);
-    }
-
-    /// Handles mouse up events on this port by emitting a mouseUpOnPort
-    /// event.
-    void _onMouseUp(MouseEvent event) {
-        event.stopPropagation();
-        var center = this._getCenter();
-        var ped = new PortEventData(this, center, event);
-        var ce = new CustomEvent('finishPipe', detail: ped);
-        this._div.dispatchEvent(ce);
-    }
-
-    /// Return the center point (in pixels) of this port.
-    Point _getCenter() {
-        var portRect = this._div.getBoundingClientRect();
-        var center = new Point(
-            portRect.left + (portRect.width  / 2),
-            portRect.top  + (portRect.height / 2)
-        );
-        return center;
     }
 }

@@ -23,6 +23,7 @@ import 'gadgets/base_gadget.dart';
 import 'gadgets/input.dart';
 import 'gadgets/md5.dart';
 import 'gadgets/pipe.dart';
+import 'gadgets/port.dart';
 
 /// A view container for gadgets..
 class Workspace extends BaseComponent {
@@ -95,7 +96,7 @@ class Workspace extends BaseComponent {
         event.stopPropagation();
         var portEventData = (event as CustomEvent).detail;
         var workspaceRect = this.root.offset;
-        var endpoint = portEventData.center - workspaceRect.topLeft;
+        var endpoint = portEventData.port.getCenter() - workspaceRect.topLeft;
         this._newPipe = new Pipe(endpoint, endpoint)..mount(this.root);
         this._newPipePort = portEventData.port;
         if (this._newPipePort is InputPort) {
@@ -114,7 +115,7 @@ class Workspace extends BaseComponent {
         event.stopPropagation();
         var portEventData = (event as CustomEvent).detail;
         var workspaceRect = this.root.offset;
-        var endpoint = portEventData.center - workspaceRect.topLeft;
+        var endpoint = portEventData.port.getCenter() - workspaceRect.topLeft;
 
         /// Make the connection.
         var start = this._newPipePort;
@@ -127,7 +128,7 @@ class Workspace extends BaseComponent {
         }
 
         if (start is OutputPort && end is InputPort) {
-            end.connect(start);
+            end.connect(this._newPipe, start);
             this._newPipe.moveEndTo(endpoint);
             this._pipes.add(this._newPipe);
         } else {

@@ -21,14 +21,9 @@ import 'package:crypto/crypto.dart';
 
 import '../elements.dart';
 import 'base_gadget.dart';
+import 'port.dart';
 
 class Md5Gadget extends BaseGadget {
-    /// Reads a input from in0..
-    InputPort in0;
-
-    /// Writes MD5 hash to out0.
-    OutputPort out0;
-
     /// The element that displays the hash.
     SpanElement display;
 
@@ -53,16 +48,14 @@ class Md5Gadget extends BaseGadget {
 
     /// Mount this gadget to the DOM.
     void mount(Element parent) {
-        this.in0 = new InputPort(0, this.transform)..mount(this.root);
-        this.out0 = new OutputPort(0)..mount(this.root);
+        this.inputs = [new InputPort(0, this.transform)..mount(this.root)];
+        this.outputs = [new OutputPort(0)..mount(this.root)];
         parent.append(this.root);
         super.mount(parent);
     }
 
     /// Called when the component is destroyed.
     void unmount() {
-        this.in0.unmount();
-        this.out0.unmount();
         super.unmount();
     }
 
@@ -80,7 +73,7 @@ class Md5Gadget extends BaseGadget {
         }
 
         this._setDisplay(digest);
-        this.out0.send(data);
+        this.outputs[0].send(data);
     }
 
     /// Update the gadget's display with new data.
