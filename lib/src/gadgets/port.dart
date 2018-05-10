@@ -86,6 +86,7 @@ class InputPort extends BaseComponent {
             throw new Exception(
                 'Cannot disconnect input port; it is not connected to anything');
         }
+        this._handler(null);
         this._subscription.cancel();
         this._subscription = null;
         this._div.classes.remove('connected');

@@ -40,13 +40,16 @@ class Workspace extends BaseComponent {
     dynamic _newPipePort;
 
     /// Keep track of all pipes in the workspace.
-    List<Pipe> _pipes;
+    Map<Pipe, InputPort> _pipes;
 
-    /// Subscription to start-pipe events on ports.
+    /// Subscription to startPipe events on ports.
     StreamSubscription<Event> _startPipeSubscription;
 
-    /// Subscription to finish-pipe events on ports.
+    /// Subscription to finishPipe events on ports.
     StreamSubscription<Event> _finishPipeSubscription;
+
+    /// Subscription to removePipe events on ports.
+    StreamSubscription<Event> _removePipeSubscription;
 
     /// Subscription to mouse-move events in the workspace. Only subscribed to
     /// during pipe creation.
@@ -57,7 +60,7 @@ class Workspace extends BaseComponent {
 
     /// Constructor.
     Workspace() {
-        this._pipes = [];
+        this._pipes = {};
     }
 
     /// Create and mount the workspace component.
@@ -80,6 +83,8 @@ class Workspace extends BaseComponent {
         this._finishPipeSubscription = parent.on['finishPipe'].listen(
             this._onFinishPipe);
         this._mouseUpSubscription = parent.onMouseUp.listen(this._onMouseUp);
+        this._removePipeSubscription = parent.on['removePipe'].listen(
+            this._removePipe);
     }
 
     /// Remove the workspace from the DOM.
@@ -88,6 +93,8 @@ class Workspace extends BaseComponent {
         this._startPipeSubscription = null;
         this._finishPipeSubscription.cancel();
         this._finishPipeSubscription = null;
+        this._removePipeSubscription.cancel();
+        this._removePipeSubscription = null;
         super.unmount();
     }
 
@@ -130,7 +137,7 @@ class Workspace extends BaseComponent {
         if (start is OutputPort && end is InputPort) {
             end.connect(this._newPipe, start);
             this._newPipe.moveEndTo(endpoint);
-            this._pipes.add(this._newPipe);
+            this._pipes[this._newPipe] = end;
         } else {
             this._newPipe.unmount();
         }
@@ -156,5 +163,15 @@ class Workspace extends BaseComponent {
         this._mouseMoveSubscription = null;
         this.root.classes.remove('highlight-output-ports');
         this.root.classes.remove('highlight-available-input-ports');
+    }
+
+    /// Remove a pipe from the workspace.
+    ///
+    /// Disconnect the pipe from its input ports.
+    void _removePipe(CustomEvent event) {
+        var pipe = event.detail;
+        pipe.unmount();
+        var port = this._pipes.remove(pipe);
+        port.disconnect();
     }
 }

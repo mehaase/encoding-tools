@@ -40,7 +40,12 @@ class Pipe extends BaseComponent {
 
         this._root = $svg()
             ..classes.add('pipe')
-            ..append(this._path);
+            ..append(this._path)
+            ..onContextMenu.listen((event) {
+                event.preventDefault();
+                var ce = new html.CustomEvent('removePipe', detail: this);
+                this._root.dispatchEvent(ce);
+            });
     }
 
     /// Move the pipe's endpoints to the given pixel coordinates.
