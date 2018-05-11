@@ -20,16 +20,29 @@ import 'dart:math' as math;
 
 import '../base_component.dart';
 import '../elements.dart';
+import 'pipe.dart';
 import 'port.dart';
 
 const int GRID_SIZE = 20;
 
 /// Base class for gadgets that implements some shared functionality.
 abstract class BaseGadget extends BaseComponent {
+    /// The header area where the gadget name is displayed.
     Element header;
+
+    /// The root element containing the header and body.
     Element root;
+
+    /// A stream of drag events.
     StreamSubscription<MouseEvent> dragEvents;
+
+    /// Subscription to right clicks.
+    StreamSubscription<MouseEvent> rightClickEvents;
+
+    /// List of input ports.
     List<InputPort> inputs;
+
+    /// List of output ports.
     List<OutputPort> outputs;
 
     /// Used for moving gadgets around in the workspace.
@@ -51,17 +64,40 @@ abstract class BaseGadget extends BaseComponent {
         });
     }
 
+    /// Return a list of all pipes connected to this gadget's ports.
+    List<Pipe> getPipes() {
+        var pipes = new List<Pipe>();
+        for (var input in this.inputs) {
+            if (input.pipe != null) {
+                pipes.add(input.pipe);
+            }
+        }
+        for (var output in this.outputs) {
+            pipes.addAll(output.pipes);
+        }
+        return pipes;
+    }
+
+    /// Attach this component to the DOM.
     void mount(Element parent) {
         if (this.header != null) {
             this.dragEvents = this.header.onMouseDown.listen(this.startMove);
+            this.rightClickEvents = this.header.onContextMenu.listen((event) {
+                event.preventDefault();
+                var ce = new CustomEvent('removeGadget', detail: this);
+                this.root.dispatchEvent(ce);
+            });
         }
     }
 
+    /// Remove this component from the DOM.
     void unmount() {
         this.dragEvents?.cancel();
         this.dragEvents = null;
-        this.inputs?.forEach((input) => input.unmount());
-        this.outputs?.forEach((outputs) => outputs.unmount());
+        this.rightClickEvents?.cancel();
+        this.rightClickEvents = null;
+        this.inputs.forEach((input) => input.unmount());
+        this.outputs.forEach((outputs) => outputs.unmount());
         this.root.remove();
         super.unmount();
     }

@@ -173,7 +173,3 @@ svg.pipe path {
     stroke: var(--pipe-color);
     stroke-width: 10px;
 }
-
-svg.pipe path:hover {
-    stroke: red;
-}

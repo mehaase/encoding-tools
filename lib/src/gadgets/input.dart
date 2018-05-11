@@ -53,6 +53,7 @@ class InputGadget extends BaseGadget {
 
     /// Mount this gadget to its parent.
     void mount(Element parent) {
+        this.inputs = [];
         this.outputs = [new OutputPort(0)..mount(this.root)];
         parent.append(this.root);
         super.mount(parent);

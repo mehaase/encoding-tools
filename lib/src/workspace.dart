@@ -40,7 +40,7 @@ class Workspace extends BaseComponent {
     dynamic _newPipePort;
 
     /// Keep track of all pipes in the workspace.
-    Map<Pipe, InputPort> _pipes;
+    List<Pipe> _pipes;
 
     /// Subscription to startPipe events on ports.
     StreamSubscription<Event> _startPipeSubscription;
@@ -48,8 +48,11 @@ class Workspace extends BaseComponent {
     /// Subscription to finishPipe events on ports.
     StreamSubscription<Event> _finishPipeSubscription;
 
-    /// Subscription to removePipe events on ports.
+    /// Subscription to removePipe events.
     StreamSubscription<Event> _removePipeSubscription;
+
+    /// Subscription to removeGadget events.
+    StreamSubscription<Event> _removeGadgetSubscription;
 
     /// Subscription to mouse-move events in the workspace. Only subscribed to
     /// during pipe creation.
@@ -60,7 +63,7 @@ class Workspace extends BaseComponent {
 
     /// Constructor.
     Workspace() {
-        this._pipes = {};
+        this._pipes = [];
     }
 
     /// Create and mount the workspace component.
@@ -85,6 +88,8 @@ class Workspace extends BaseComponent {
         this._mouseUpSubscription = parent.onMouseUp.listen(this._onMouseUp);
         this._removePipeSubscription = parent.on['removePipe'].listen(
             this._removePipe);
+        this._removeGadgetSubscription = parent.on['removeGadget'].listen(
+            this._removeGadget);
     }
 
     /// Remove the workspace from the DOM.
@@ -135,9 +140,9 @@ class Workspace extends BaseComponent {
         }
 
         if (start is OutputPort && end is InputPort) {
-            end.connect(this._newPipe, start);
+            this._newPipe.connect(start, end);
             this._newPipe.moveEndTo(endpoint);
-            this._pipes[this._newPipe] = end;
+            this._pipes.add(this._newPipe);
         } else {
             this._newPipe.unmount();
         }
@@ -165,13 +170,27 @@ class Workspace extends BaseComponent {
         this.root.classes.remove('highlight-available-input-ports');
     }
 
+    /// Remove a gadget from the workspace.
+    ///
+    /// Remove any connected pipes.
+    void _removeGadget(Event event) {
+        var gadget = (event as CustomEvent).detail;
+        for (var pipe in gadget.getPipes()) {
+            print(pipe);
+            pipe.disconnect();
+            pipe.unmount();
+            this._pipes.remove(pipe);
+        }
+        gadget.unmount();
+    }
+
     /// Remove a pipe from the workspace.
     ///
     /// Disconnect the pipe from its input ports.
-    void _removePipe(CustomEvent event) {
-        var pipe = event.detail;
+    void _removePipe(Event event) {
+        var pipe = (event as CustomEvent).detail;
+        pipe.disconnect();
         pipe.unmount();
-        var port = this._pipes.remove(pipe);
-        port.disconnect();
+        this._pipes.remove(pipe);
     }
 }

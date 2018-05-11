@@ -38,57 +38,42 @@ class PortEventData {
 /// Duplicates a lot of logic in OutputPort, which could probably be refactored.
 class InputPort extends BaseComponent {
     /// Indicates whether the port is currently connected.
-    bool get connected => this._subscription != null;
-
-    /// The div element depicting this port.
-    DivElement _div;
-
-    /// The port number; currently used only for positioning the port on the
-    /// parent element.
-    int _portNum;
-
-    /// A callback that is invoked for every data event.
-    DataReceivedHandler _handler;
-
-    /// Subscription to an output port's event stream.
-    StreamSubscription<List<int>> _subscription;
-
-    /// Subscription to mouse down events on this port.
-    StreamSubscription<MouseEvent> _mouseDownEvents;
-
-    /// Subscription to mouse up events on this port.
-    StreamSubscription<MouseEvent> _mouseUpEvents;
+    bool get connected => this._pipe != null;
 
     /// The pipe connected to this port, if any.
+    Pipe get pipe => this._pipe;
+
+    DivElement _div;
+    int _portNum;
+    DataReceivedHandler _handler;
+    StreamSubscription<MouseEvent> _mouseDownEvents;
+    StreamSubscription<MouseEvent> _mouseUpEvents;
     Pipe _pipe;
 
     /// Constructor
+    ///
+    /// Port number is used to place the port in the proper position.
+    /// Handler is a callback that takes a `List<int>` to receive data from
+    /// this port.
     InputPort(this._portNum, this._handler);
 
     /// Connect this input to the specified output port.
-    void connect(Pipe pipe, OutputPort out) {
-        if (this._subscription != null) {
+    void connect(Pipe pipe) {
+        if (this._pipe != null) {
             throw new Exception(
                 'Cannot connect input port; it is already connected');
         }
         this._pipe = pipe;
-        this._subscription = out.connect(pipe, this._handler);
-        /// If the output port already has data, then send it to the handler.
-        if (out.lastMessage != null) {
-            this._handler(out.lastMessage);
-        }
         this._div.classes.add('connected');
     }
 
     /// Disconnect this input from its currently attached output port.
-    void disconnect () {
-        if (this._subscription == null) {
-            throw new Exception(
-                'Cannot disconnect input port; it is not connected to anything');
+    void disconnect(Pipe pipe) {
+        if (this._pipe != pipe) {
+            throw new Exception('Trying to disconnect the wrong pipe!');
         }
+        this._pipe = null;
         this._handler(null);
-        this._subscription.cancel();
-        this._subscription = null;
         this._div.classes.remove('connected');
     }
 
@@ -104,7 +89,7 @@ class InputPort extends BaseComponent {
 
     /// Move pipe start point to match the port's current location.
     void movePipe() {
-        this._pipe.moveEndTo(this.getCenter() + new Point(0, -60));
+        this._pipe?.moveEndTo(this.getCenter() + new Point(0, -60));
     }
 
     /// Mount this port to the DOM.
@@ -115,13 +100,24 @@ class InputPort extends BaseComponent {
         parent.append(this._div);
     }
 
+    /// Send data to handler function.
+    void send(List<int> data) {
+        this._handler(data);
+    }
+
+    /// Override toString()
+    String toString() {
+        var connected = this.connected ? ' connected' : '';
+        return '[InputPort#${this.hashCode}${connected}]';
+    }
+
     /// Called when the component is destroyed.
     void unmount() {
         /// Clean up connection.
         if (this.connected) {
-            this.disconnect();
+            throw new Exception(
+                'Cannot unmount a port while it is still connected');
         }
-        this._pipe = null;
 
         /// Clean up event handling.
         this._mouseDownEvents.cancel();
@@ -160,41 +156,32 @@ class InputPort extends BaseComponent {
 ///
 /// Duplicates a lot of logic in InputPort, which could probably be refactored.
 class OutputPort extends BaseComponent {
-    /// Contains the last message sent through this port.
-    List<int> get lastMessage => this._lastMessage;
-    List<int> _lastMessage;
-
-    /// The div element depicting this port.
-    DivElement _div;
-
-    /// Controls the data stream for this port.
-    StreamController<List<int>> _controller;
-
-    /// Subscription to mouse down events on this port.
-    StreamSubscription<MouseEvent> _mouseDownEvents;
-
-    /// Subscription to mouse up events on this port.
-    StreamSubscription<MouseEvent> _mouseUpEvents;
-
-    /// The port number; currently used only for positioning the port on the
-    /// parent element.
-    int _portNum;
-
     /// Collection of pipes attached to this port.
+    List<Pipe> get pipes => this._pipes;
+
+    List<int> _lastMessage;
+    DivElement _div;
+    StreamSubscription<MouseEvent> _mouseDownEvents;
+    StreamSubscription<MouseEvent> _mouseUpEvents;
+    int _portNum;
     List<Pipe> _pipes;
 
     /// Constructor.
+    ///
+    /// Port number is used to place the port in the proper position.
     OutputPort(this._portNum) {
-        this._controller = new StreamController<List<int>>.broadcast();
         this._pipes = [];
     }
 
-    /// Connect a handler to this output port.
-    ///
-    /// This is only meant to be called from InputPort.
-    StreamSubscription<List<int>> connect(Pipe pipe, DataReceivedHandler handler) {
+    /// Connect a pipe to this output port.
+    void connect(Pipe pipe) {
         this._pipes.add(pipe);
-        return this._controller.stream.listen(handler);
+        pipe.send(_lastMessage);
+    }
+
+    /// Disconnect a pipe from this output port..
+    void disconnect(Pipe pipe) {
+        this._pipes.remove(pipe);
     }
 
     /// Return the center point (in pixels) of this port.
@@ -225,13 +212,19 @@ class OutputPort extends BaseComponent {
     /// Send data out of this port.
     void send(List<int> data) {
         this._lastMessage = data;
-        this._controller.add(data);
+        for (var pipe in this._pipes) {
+            pipe.send(data);
+        }
+    }
+
+    /// Override toString()
+    String toString() {
+        return '[OutputPort#${this.hashCode} ${this._pipes.length} pipes]';
     }
 
     /// Called when the component is destroyed.
     void unmount() {
         /// Clean up events.
-        this._controller.close();
         this._mouseDownEvents.cancel();
         this._mouseDownEvents = null;
         this._mouseUpEvents.cancel();
