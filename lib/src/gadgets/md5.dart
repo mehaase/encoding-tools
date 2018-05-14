@@ -37,11 +37,11 @@ class Md5Gadget extends BaseGadget {
             ..appendText('MD5');
 
         this.root = $div()
-            ..className='gadget transform-gadget'
+            ..className = 'gadget transform-gadget'
             ..append(header)
             ..append(
                 $div()
-                ..className='content'
+                ..className = 'content'
                 ..append(this.display)
             );
     }
@@ -81,7 +81,9 @@ class Md5Gadget extends BaseGadget {
         var data;
 
         if (digest == null) {
-            data = $em()..appendText('null');
+            data = $span()
+                ..className = 'null'
+                ..appendText('null');
         } else {
             data = $pre()
                 ..className = 'user-select'

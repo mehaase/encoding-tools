@@ -19,6 +19,7 @@ import 'dart:html';
 import 'package:logging/logging.dart';
 
 import 'base_component.dart';
+import 'drawer.dart';
 import 'elements.dart';
 import 'workspace.dart';
 
@@ -26,6 +27,10 @@ final Logger log = new Logger('app');
 
 class AppComponent extends BaseComponent
 {
+    /// The drawer that displays all available gadgets.
+    Drawer drawer;
+
+    /// The workspace is where gadgets are instantiated and connected together.
     Workspace workspace;
 
     /// Constructor.
@@ -38,13 +43,12 @@ class AppComponent extends BaseComponent
             );
         });
 
+        this.drawer = new Drawer();
         this.workspace = new Workspace();
     }
 
     /// Create and mount the application component.
     void mount(Element parent) {
-        var workspaceEl = $div()..id = 'workspace';
-
         // Clear the loading message.
         while (parent.firstChild != null) {
             parent.firstChild.remove();
@@ -57,13 +61,18 @@ class AppComponent extends BaseComponent
                 ..className = 'navbar navbar-expand-lg navbar-light bg-light border-bottom'
                 ..append(
                     $span()
-                    ..className='navbar-brand'
+                    ..className = 'navbar-brand'
                     ..appendText('Encoding Tools ')
                     ..append($i()..className = 'fas fa-wrench')
                 )
-            )
-            ..append(workspaceEl);
+            );
 
-        this.workspace.mount(workspaceEl);
+        this.drawer.mount(parent);
+        this.workspace.mount(parent);
+    }
+
+    /// Do not allow unmounting.
+    void unmount() {
+        throw new Exception('The application component cannot be unmounted');
     }
 }

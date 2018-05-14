@@ -35,6 +35,8 @@ class InputGadget extends BaseGadget {
             ..appendText('Input');
 
         this.textarea = $textarea()
+            ..spellcheck = false
+            ..placeholder = "Enter text here…"
             ..cols = 40
             ..rows = 2;
 

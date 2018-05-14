@@ -24,11 +24,12 @@ import 'gadgets/input.dart';
 import 'gadgets/md5.dart';
 import 'gadgets/pipe.dart';
 import 'gadgets/port.dart';
+import 'gadgets/factory.dart';
 
 /// A view container for gadgets..
 class Workspace extends BaseComponent {
     /// The div container for the workspace.
-    Element root;
+    Element _root;
 
     /// Represents a pipe that is currently being created, or null if no pipe is
     /// being created.
@@ -38,6 +39,9 @@ class Workspace extends BaseComponent {
     /// begins, or null if no pipe is being created. It's either an `InputPort`
     /// or an `OutputPort`.
     dynamic _newPipePort;
+
+    /// Keep track of all gadgets in the workspace.
+    List<BaseGadget> _gadgets;
 
     /// Keep track of all pipes in the workspace.
     List<Pipe> _pipes;
@@ -61,35 +65,52 @@ class Workspace extends BaseComponent {
     /// Subscription to mouse-up events in the workspace.
     StreamSubscription<MouseEvent> _mouseUpSubscription;
 
+    /// Subscription to drag-over events in the workspace.
+    StreamSubscription<MouseEvent> _dragOverSubscription;
+
+    /// Subscription to [drag and] drop events in the workspace.
+    StreamSubscription<MouseEvent> _dropSubscription;
+
     /// Constructor.
     Workspace() {
+        this._gadgets = [];
         this._pipes = [];
     }
 
     /// Create and mount the workspace component.
     void mount(Element parent) {
-        this.root = parent;
-        var inputGadget = new InputGadget();
+        this._root = $div()..id = 'workspace';
+
+        var inputGadget = gadgetFactory('input');
         inputGadget.moveToGrid(new Point(1, 1));
-        inputGadget.mount(parent);
+        inputGadget.mount(this._root);
+        this._gadgets.add(inputGadget);
 
-        var md5Gadget1 = new Md5Gadget();
+        var md5Gadget1 = gadgetFactory('md5');
         md5Gadget1.moveToGrid(new Point(3, 9));
-        md5Gadget1.mount(parent);
+        md5Gadget1.mount(this._root);
+        this._gadgets.add(md5Gadget1);
 
-        var md5Gadget2 = new Md5Gadget();
+        var md5Gadget2 = gadgetFactory('md5');
         md5Gadget2.moveToGrid(new Point(1, 15));
-        md5Gadget2.mount(parent);
+        md5Gadget2.mount(this._root);
+        this._gadgets.add(md5Gadget2);
 
-        this._startPipeSubscription = parent.on['startPipe'].listen(
+        this._startPipeSubscription = this._root.on['startPipe'].listen(
             this._onStartPipe);
-        this._finishPipeSubscription = parent.on['finishPipe'].listen(
+        this._finishPipeSubscription = this._root.on['finishPipe'].listen(
             this._onFinishPipe);
-        this._mouseUpSubscription = parent.onMouseUp.listen(this._onMouseUp);
-        this._removePipeSubscription = parent.on['removePipe'].listen(
+        this._mouseUpSubscription = this._root.onMouseUp.listen(this._onMouseUp);
+        this._removePipeSubscription = this._root.on['removePipe'].listen(
             this._removePipe);
-        this._removeGadgetSubscription = parent.on['removeGadget'].listen(
+        this._removeGadgetSubscription = this._root.on['removeGadget'].listen(
             this._removeGadget);
+        this._dragOverSubscription = this._root.onDragOver.listen(
+            this._onDragOver);
+        this._dropSubscription = this._root.onDrop.listen(
+            this._onDrop);
+
+        parent.append(this._root);
     }
 
     /// Remove the workspace from the DOM.
@@ -100,6 +121,11 @@ class Workspace extends BaseComponent {
         this._finishPipeSubscription = null;
         this._removePipeSubscription.cancel();
         this._removePipeSubscription = null;
+        this._dragOverSubscription.cancel();
+        this._dragOverSubscription = null;
+        this._dropSubscription.cancel();
+        this._dropSubscription = null;
+        this._root.remove();
         super.unmount();
     }
 
@@ -107,16 +133,16 @@ class Workspace extends BaseComponent {
     void _onStartPipe(Event event) {
         event.stopPropagation();
         var portEventData = (event as CustomEvent).detail;
-        var workspaceRect = this.root.offset;
+        var workspaceRect = this._root.offset;
         var endpoint = portEventData.port.getCenter() - workspaceRect.topLeft;
-        this._newPipe = new Pipe(endpoint, endpoint)..mount(this.root);
+        this._newPipe = new Pipe(endpoint, endpoint)..mount(this._root);
         this._newPipePort = portEventData.port;
         if (this._newPipePort is InputPort) {
-            this.root.classes.add('highlight-output-ports');
+            this._root.classes.add('highlight-output-ports');
         } else if (this._newPipePort is OutputPort) {
-            this.root.classes.add('highlight-available-input-ports');
+            this._root.classes.add('highlight-available-input-ports');
         }
-        this._mouseMoveSubscription = this.root.onMouseMove.listen((mouseEvent) {
+        this._mouseMoveSubscription = this._root.onMouseMove.listen((mouseEvent) {
             this._newPipe.moveEndTo(mouseEvent.page - workspaceRect.topLeft);
         });
     }
@@ -126,7 +152,7 @@ class Workspace extends BaseComponent {
         /// Cleanup pipe-creation state.
         event.stopPropagation();
         var portEventData = (event as CustomEvent).detail;
-        var workspaceRect = this.root.offset;
+        var workspaceRect = this._root.offset;
         var endpoint = portEventData.port.getCenter() - workspaceRect.topLeft;
 
         /// Make the connection.
@@ -151,9 +177,34 @@ class Workspace extends BaseComponent {
         this._newPipePort = null;
         this._mouseMoveSubscription.cancel();
         this._mouseMoveSubscription = null;
-        this.root.classes.remove('highlight-output-ports');
-        this.root.classes.remove('highlight-available-input-ports');
-   }
+        this._root.classes.remove('highlight-output-ports');
+        this._root.classes.remove('highlight-available-input-ports');
+    }
+
+    /// Handle drag-over events in the workspace.
+    ///
+    /// This is used to drag gadgets from the drawer and drop them onto the
+    /// workspace.
+    void _onDragOver(MouseEvent event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+    }
+
+    /// Handle [drag and] drop events in the workspace.
+    ///
+    /// This is used to drag gadgets from the drawer and drop them onto the
+    /// workspace.
+    void _onDrop(MouseEvent event) {
+        var data = event.dataTransfer.getData('text/plain').split(';');
+        var type = data[0];
+        var mouseOffset = new Point(int.parse(data[1]), int.parse(data[2]));
+        var client = this._root.getBoundingClientRect();
+        var location = event.page - client.topLeft - mouseOffset;
+        var gadget = gadgetFactory(type);
+        gadget.moveToPixel(location, snap: true);
+        gadget.mount(this._root);
+        this._gadgets.add(gadget);
+    }
 
     /// Handle mouse-up events in the workspace.
     ///
@@ -166,8 +217,8 @@ class Workspace extends BaseComponent {
         this._newPipePort = null;
         this._mouseMoveSubscription?.cancel();
         this._mouseMoveSubscription = null;
-        this.root.classes.remove('highlight-output-ports');
-        this.root.classes.remove('highlight-available-input-ports');
+        this._root.classes.remove('highlight-output-ports');
+        this._root.classes.remove('highlight-available-input-ports');
     }
 
     /// Remove a gadget from the workspace.
@@ -182,6 +233,7 @@ class Workspace extends BaseComponent {
             this._pipes.remove(pipe);
         }
         gadget.unmount();
+        this._gadgets.remove(gadget);
     }
 
     /// Remove a pipe from the workspace.

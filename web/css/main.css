@@ -40,11 +40,53 @@ div#app {
     right: 0;
 }
 
-nav {
-    height: var(--nav-height);
+nav.navbar {
+    height: calc(var(--nav-height) + 1px);
+    z-index: 1;
 }
 
-/* WorkspaceComponent */
+nav.navbar .navbar-brand {
+    font-size: 1.6rem;
+}
+
+/* Drawer */
+
+div#drawer {
+    position: fixed;
+    top: var(--nav-height);
+    bottom: 0;
+    right: 0;
+    width: 15em;
+    z-index: 1;
+    padding: 0.5em;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border-left: 1px solid #dee2e6;
+}
+
+div#drawer h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+div#drawer h2 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+div#drawer .gadget-handle {
+    display: inline-block;
+    cursor: move;
+    height: 2.4rem;
+    padding: 0.3rem 1rem;
+    background-color: var(--gadget-color);
+    font-size: 1.2rem;
+}
+
+/* Workspace */
 
 div#workspace {
     position: fixed;
@@ -87,9 +129,18 @@ div.gadget .content pre {
     margin-bottom: 0;
 }
 
+div.gadget .content span.null {
+    color: #747474;
+}
+
 div.input-gadget {
     --gadget-color: var(--green);
     height: calc(var(--cell-size) * 6);
+}
+
+div.input-gadget textarea {
+    border: none;
+    resize: none;
 }
 
 div.transform-gadget {
