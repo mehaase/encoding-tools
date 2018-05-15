@@ -14,6 +14,7 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async';
 import 'dart:html';
 
 import 'package:logging/logging.dart';
@@ -21,6 +22,7 @@ import 'package:logging/logging.dart';
 import 'base_component.dart';
 import 'drawer.dart';
 import 'elements.dart';
+import 'help.dart';
 import 'workspace.dart';
 
 final Logger log = new Logger('app');
@@ -30,8 +32,14 @@ class AppComponent extends BaseComponent
     /// The drawer that displays all available gadgets.
     Drawer drawer;
 
+    /// The component that displays help text.
+    HelpComponent help;
+
     /// The workspace is where gadgets are instantiated and connected together.
     Workspace workspace;
+
+    StreamSubscription<KeyboardEvent> _onKeyPressSubscription;
+    StreamSubscription<MouseEvent> _onClickHelpSubscription;
 
     /// Constructor.
     AppComponent() {
@@ -44,6 +52,7 @@ class AppComponent extends BaseComponent
         });
 
         this.drawer = new Drawer();
+        this.help = new HelpComponent();
         this.workspace = new Workspace();
     }
 
@@ -54,20 +63,39 @@ class AppComponent extends BaseComponent
             parent.firstChild.remove();
         }
 
+        var helpButton = $button()
+            ..type = 'button'
+            ..className = 'btn btn-primary'
+            ..append($i()..className = 'fas fa-question-circle')
+            ..appendText(' Help');
+
         // Mount the application component.
         parent
             ..append(
                 $nav()
-                ..className = 'navbar navbar-expand-lg navbar-light bg-light border-bottom'
+                ..className = 'navbar navbar-expand-lg navbar-light bg-light border-bottom justify-content-between'
                 ..append(
                     $span()
                     ..className = 'navbar-brand'
                     ..appendText('Encoding Tools ')
                     ..append($i()..className = 'fas fa-wrench')
                 )
+                ..append(helpButton)
             );
 
+        this._onClickHelpSubscription = helpButton.onClick.listen((event) {
+            this.help.toggle();
+        });
+
+        this._onKeyPressSubscription = document.onKeyPress.listen((event) {
+            if (event.key == '?') {
+                event.preventDefault();
+                this.help.toggle();
+            }
+        });
+
         this.drawer.mount(parent);
+        this.help.mount(parent);
         this.workspace.mount(parent);
     }
 

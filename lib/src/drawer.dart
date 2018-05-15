@@ -37,7 +37,7 @@ class Drawer extends BaseComponent {
             ..id = 'drawer'
             ..append(
                 $h1()
-                ..appendText('Gadgets ')
+                ..appendText('Gadget Drawer')
             )
             ..append(
                 $div()

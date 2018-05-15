@@ -30,6 +30,16 @@ pre {
     cursor: text;
 }
 
+/* Modals */
+
+div.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+div.modal-dialog {
+    max-width: 750px;
+}
+
 /* AppComponent */
 
 div#app {
