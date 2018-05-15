@@ -30,9 +30,11 @@ class InputGadget extends BaseGadget {
 
     /// Constructor
     InputGadget() {
+        var meta = this.getMeta();
+
         this.header = $div()
             ..className = 'header'
-            ..appendText('Input');
+            ..appendText(meta.title);
 
         this.textarea = $textarea()
             ..spellcheck = false
@@ -44,13 +46,18 @@ class InputGadget extends BaseGadget {
             this._handleKeyboard);
 
         this.root = $div()
-            ..className='gadget input-gadget'
+            ..className='gadget ${meta.cssClass}'
             ..append(header)
             ..append(
                 $div()
                 ..className = 'content'
                 ..append(textarea)
             );
+    }
+
+    /// Metadata for input gadget.
+    GadgetMeta getMeta() {
+        return new GadgetMeta('input', 'input-gadget', 'Input');
     }
 
     /// Mount this gadget to its parent.

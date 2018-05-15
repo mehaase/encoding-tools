@@ -27,23 +27,31 @@ class Md5Gadget extends BaseGadget {
     /// The element that displays the hash.
     SpanElement display;
 
+    static String title = 'MD5';
+
     /// Constructor
     Md5Gadget() {
+        var meta = this.getMeta();
         this.display = $span();
         this._setDisplay(null);
 
         this.header = $div()
             ..className = 'header'
-            ..appendText('MD5');
+            ..appendText(meta.title);
 
         this.root = $div()
-            ..className = 'gadget transform-gadget'
+            ..className = 'gadget ${meta.cssClass}'
             ..append(header)
             ..append(
                 $div()
                 ..className = 'content'
                 ..append(this.display)
             );
+    }
+
+    /// Return metadata for MD5 gadget.
+    GadgetMeta getMeta() {
+        return new GadgetMeta('md5', 'transform-gadget', 'MD5');
     }
 
     /// Mount this gadget to the DOM.

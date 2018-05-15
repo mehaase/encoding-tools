@@ -14,52 +14,36 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import 'dart:async';
 import 'dart:html';
 
 import 'base_component.dart';
 import 'elements.dart';
+import 'gadgets/base_gadget.dart';
 import 'gadgets/factory.dart';
+import 'gadgets/input.dart';
+import 'gadgets/md5.dart';
 
 /// Displays a collection of gadgets that may be added to the workspace.
 class Drawer extends BaseComponent {
-    /// The div container for the drawer.
     Element _root;
-
-    /// Gadget currently being dragged.
     dynamic _draggedGadget;
-
-    /// Container for dragged gadget.
     DivElement _draggedGadgetContainer;
+    List<StreamSubscription> _subscriptions;
+
+    /// Constructor
+    Drawer() {
+        this._subscriptions = [];
+    }
 
     /// Create and mount the drawer component.
     void mount(Element parent) {
         this._root = $div()
             ..id = 'drawer'
-            ..append(
-                $h1()
-                ..appendText('Gadget Drawer')
-            )
-            ..append(
-                $div()
-                ..className = "gadget-handle input-gadget"
-                ..appendText('Input')
-                ..draggable = true
-                ..onDragStart.listen((e) => this._onDragStart(e, 'input'))
-                ..onDragEnd.listen(this._onDragEnd)
-            )
-            ..append(
-                $h2()
-                ..appendText('Hashes ')
-            )
-            ..append(
-                $div()
-                ..className = "gadget-handle transform-gadget"
-                ..appendText('MD5')
-                ..draggable = true
-                ..onDragStart.listen((e) => this._onDragStart(e, 'md5'))
-                ..onDragEnd.listen(this._onDragEnd)
-            );
-
+            ..append($h1()..appendText('Gadget Drawer'))
+            ..append(this._gadgetHandle(new InputGadget()))
+            ..append($h2()..appendText('Hashes'))
+            ..append(this._gadgetHandle(new Md5Gadget()));
 
         parent.append(this._root);
     }
@@ -71,7 +55,27 @@ class Drawer extends BaseComponent {
 
     /// Remove the drawer from the DOM.
     void unmount() {
+        for (var subscription in this._subscriptions) {
+            subscription.cancel();
+        }
+        this._subscriptions.clear();
         this._root.remove();
+    }
+
+    /// Returns a new gadget handle that is registered for drag-and-drop
+    /// operations.
+    DivElement _gadgetHandle(BaseGadget gadget) {
+        var meta = gadget.getMeta();
+        var handle = $div()
+            ..className = "gadget-handle ${meta.cssClass}"
+            ..appendText(meta.title)
+            ..draggable = true;
+
+        this._subscriptions.add(handle.onDragStart.listen(
+            (e) => this._onDragStart(e, meta.name)));
+        this._subscriptions.add(handle.onDragEnd.listen(this._onDragEnd));
+
+        return handle;
     }
 
     /// Handle the start of a drag-and-drop operation.

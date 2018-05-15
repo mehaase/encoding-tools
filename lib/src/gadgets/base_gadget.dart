@@ -45,6 +45,9 @@ abstract class BaseGadget extends BaseComponent {
     /// List of output ports.
     List<OutputPort> outputs;
 
+    /// Overrride to return gadget metadata.
+    GadgetMeta getMeta();
+
     /// Used for moving gadgets around in the workspace.
     void startMove(MouseEvent startEvent) {
         var parent = this.root.parent;
@@ -125,4 +128,13 @@ abstract class BaseGadget extends BaseComponent {
         this.root.style.top = '${top}px';
         this.root.style.left = '${left}px';
     }
+}
+
+/// Contains data for a gadget handle, i.e. the thing that appears in the
+/// gadget drawer.
+class GadgetMeta {
+    String name;
+    String cssClass;
+    String title;
+    GadgetMeta(this.name, this.cssClass, this.title);
 }
