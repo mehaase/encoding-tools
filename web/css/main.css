@@ -96,10 +96,10 @@ div#drawer h2 {
 div#drawer .gadget-handle {
     display: inline-block;
     cursor: move;
-    height: 2.4rem;
-    padding: 0.3rem 1rem;
+    height: 2rem;
+    padding: 0.3rem 0.8rem;
     background-color: var(--gadget-color);
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin-right: 0.5rem;
 }
 
