@@ -100,6 +100,7 @@ div#drawer .gadget-handle {
     padding: 0.3rem 1rem;
     background-color: var(--gadget-color);
     font-size: 1.2rem;
+    margin-right: 0.5rem;
 }
 
 /* Workspace */
@@ -125,7 +126,7 @@ div.gadget {
     z-index: 1;
     position: absolute;
     display: inline-block;
-    width: 320px;
+    width: calc(var(--cell-size) * 16);
     background: white;
     border: var(--border-width) solid var(--gadget-color);
 }
@@ -143,6 +144,7 @@ div.gadget .content {
 div.gadget .content pre {
     padding: 5px;
     margin-bottom: 0;
+    overflow: hidden;
 }
 
 div.gadget .content span.null {
@@ -159,7 +161,7 @@ div.input-gadget textarea {
     resize: none;
 }
 
-div.transform-gadget {
+div.hash-gadget {
     --gadget-color: var(--orange);
     height: calc(var(--cell-size) * 4);
 }

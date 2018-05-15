@@ -23,6 +23,7 @@ import 'gadgets/base_gadget.dart';
 import 'gadgets/factory.dart';
 import 'gadgets/input.dart';
 import 'gadgets/md5.dart';
+import 'gadgets/sha1.dart';
 
 /// Displays a collection of gadgets that may be added to the workspace.
 class Drawer extends BaseComponent {
@@ -43,7 +44,8 @@ class Drawer extends BaseComponent {
             ..append($h1()..appendText('Gadget Drawer'))
             ..append(this._gadgetHandle(new InputGadget()))
             ..append($h2()..appendText('Hashes'))
-            ..append(this._gadgetHandle(new Md5Gadget()));
+            ..append(this._gadgetHandle(new Md5Gadget()))
+            ..append(this._gadgetHandle(new Sha1Gadget()));
 
         parent.append(this._root);
     }
@@ -72,14 +74,14 @@ class Drawer extends BaseComponent {
             ..draggable = true;
 
         this._subscriptions.add(handle.onDragStart.listen(
-            (e) => this._onDragStart(e, meta.name)));
+            (e) => this._onDragStart(e, gadget)));
         this._subscriptions.add(handle.onDragEnd.listen(this._onDragEnd));
 
         return handle;
     }
 
     /// Handle the start of a drag-and-drop operation.
-    void _onDragStart(MouseEvent event, String type) {
+    void _onDragStart(MouseEvent event, dynamic gadget) {
         event.stopPropagation();
 
         // This is a weird hack where the element to be displayed as the drag
@@ -95,7 +97,6 @@ class Drawer extends BaseComponent {
             ..width = '320px'
             ..height = '160px'
             ..opacity = '0.5';
-        var gadget = gadgetFactory(type);
         gadget.mount(div);
         document.body.append(div);
 
@@ -106,7 +107,8 @@ class Drawer extends BaseComponent {
         var hclient = gadget.header.client;
         var x = (offset.x / tclient.width  * hclient.width).round();
         var y = (offset.y / tclient.height * hclient.height).round();
-        var data = '$type;$x;$y';
+        var meta = gadget.getMeta();
+        var data = '${meta.name};$x;$y';
         event.dataTransfer
             ..effectAllowed = 'copy'
             // The y coordinate needs to add in the paddingTop from above.

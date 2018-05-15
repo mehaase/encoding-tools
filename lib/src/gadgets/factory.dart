@@ -17,6 +17,7 @@
 import 'base_gadget.dart';
 import 'input.dart';
 import 'md5.dart';
+import 'sha1.dart';
 
 /// Instantiate a new gadget based on a type name.
 BaseGadget gadgetFactory(String type) {
@@ -25,6 +26,8 @@ BaseGadget gadgetFactory(String type) {
             return new InputGadget();
         case 'md5':
             return new Md5Gadget();
+        case 'sha1':
+            return new Sha1Gadget();
         default:
             throw new Exception('Cannot construct gadget type: $type');
     }

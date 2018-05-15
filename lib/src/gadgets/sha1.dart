@@ -23,12 +23,12 @@ import '../elements.dart';
 import 'base_gadget.dart';
 import 'port.dart';
 
-class Md5Gadget extends BaseGadget {
+class Sha1Gadget extends BaseGadget {
     /// The element that displays the hash.
     SpanElement display;
 
     /// Constructor
-    Md5Gadget() {
+    Sha1Gadget() {
         var meta = this.getMeta();
         this.display = $span();
         this._setDisplay(null);
@@ -39,7 +39,7 @@ class Md5Gadget extends BaseGadget {
 
         this.root = $div()
             ..className = 'gadget ${meta.cssClass}'
-            ..style.width = '280px'
+            ..style.width = '340px'
             ..append(header)
             ..append(
                 $div()
@@ -48,9 +48,9 @@ class Md5Gadget extends BaseGadget {
             );
     }
 
-    /// Return metadata for MD5 gadget.
+    /// Return metadata for SHA-1 gadget.
     GadgetMeta getMeta() {
-        return new GadgetMeta('md5', 'hash-gadget', 'MD5');
+        return new GadgetMeta('sha1', 'hash-gadget', 'SHA-1');
     }
 
     /// Mount this gadget to the DOM.
@@ -66,7 +66,7 @@ class Md5Gadget extends BaseGadget {
         super.unmount();
     }
 
-    /// Calculate MD5 digest of the input.
+    /// Calculate SHA-1 hash of the input.
     void transform(List<int> input) {
         var data;
         var digest;
@@ -75,7 +75,7 @@ class Md5Gadget extends BaseGadget {
             data = null;
             digest = null;
         } else {
-            data = md5.convert(input).bytes;
+            data = sha1.convert(input).bytes;
             digest = hex.encode(data);
         }
 
