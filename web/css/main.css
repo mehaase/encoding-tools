@@ -2,7 +2,7 @@
 
 body {
     --cell-size: 20px;
-    --drawer-width: 16em;
+    --drawer-width: 18em;
     --nav-height: calc(var(--cell-size) * 3);
     --footer-height: var(--cell-size);
 
@@ -161,6 +161,11 @@ div.input-gadget textarea {
     border: none;
     resize: none;
     height: 60px;
+}
+
+div.change-base-gadget {
+    --gadget-color: var(--yellow);
+    height: calc(var(--cell-size) * 4);
 }
 
 div.hash-gadget {

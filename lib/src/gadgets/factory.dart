@@ -19,6 +19,14 @@ import 'all.dart';
 /// Instantiate a new gadget based on a type name.
 BaseGadget gadgetFactory(String type) {
     switch (type) {
+        case 'base64-decoder':
+            return new Base64DecoderGadget();
+        case 'base64-encoder':
+            return new Base64EncoderGadget();
+        case 'hex-decoder':
+            return new HexDecoderGadget();
+        case 'hex-encoder':
+            return new HexEncoderGadget();
         case 'html-decoder':
             return new HtmlDecoderGadget();
         case 'html-encoder':

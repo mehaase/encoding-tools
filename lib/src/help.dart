@@ -42,6 +42,14 @@ const String HELP_CONTENT = '''<h1>What is encoding tools?</h1>
     Right click on a gadget's header (the colored area that displays the
     gadget's name) to remove it. Right click on a pipe to remove.
 </p>
+<h1>Why am I getting nulls?</h1>
+<p>
+    A gadget that transforms an input will display <code>null</code> when its
+    input is not connected to anything. Some transforms will also display null
+    if their input is invalid, for example trying to hex decode an odd number
+    of characters. <strong>Don't forget that white space counts as
+    characters!</strong>
+</p>
 <h1>Keyboard shortcuts</h1>
 <ul>
     <li><code>?</code> toggle help

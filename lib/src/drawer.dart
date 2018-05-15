@@ -40,6 +40,11 @@ class Drawer extends BaseComponent {
             ..id = 'drawer'
             ..append($h1()..appendText('Gadget Drawer'))
             ..append(this._gadgetHandle(new InputGadget()))
+            ..append($h2()..appendText('Change Base'))
+            ..append(this._gadgetHandle(new Base64DecoderGadget()))
+            ..append(this._gadgetHandle(new Base64EncoderGadget()))
+            ..append(this._gadgetHandle(new HexDecoderGadget()))
+            ..append(this._gadgetHandle(new HexEncoderGadget()))
             ..append($h2()..appendText('Hashes'))
             ..append(this._gadgetHandle(new Md5Gadget()))
             ..append(this._gadgetHandle(new Sha1Gadget()))

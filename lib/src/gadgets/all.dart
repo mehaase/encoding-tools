@@ -15,6 +15,10 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export 'base_gadget.dart';
+export 'base64_decoder.dart';
+export 'base64_encoder.dart';
+export 'hex_decoder.dart';
+export 'hex_encoder.dart';
 export 'html_decoder.dart';
 export 'html_encoder.dart';
 export 'input.dart';
