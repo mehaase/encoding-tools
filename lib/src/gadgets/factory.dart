@@ -14,15 +14,15 @@
 /// You should have received a copy of the GNU Affero General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import 'base_gadget.dart';
-import 'input.dart';
-import 'md5.dart';
-import 'sha1.dart';
-import 'sha2.dart';
+import 'all.dart';
 
 /// Instantiate a new gadget based on a type name.
 BaseGadget gadgetFactory(String type) {
     switch (type) {
+        case 'html-decoder':
+            return new HtmlDecoderGadget();
+        case 'html-encoder':
+            return new HtmlEncoderGadget();
         case 'input':
             return new InputGadget();
         case 'md5':
@@ -31,6 +31,10 @@ BaseGadget gadgetFactory(String type) {
             return new Sha1Gadget();
         case 'sha2':
             return new Sha2Gadget();
+        case 'url-decoder':
+            return new UrlDecoderGadget();
+        case 'url-encoder':
+            return new UrlEncoderGadget();
         default:
             throw new Exception('Cannot construct gadget type: $type');
     }

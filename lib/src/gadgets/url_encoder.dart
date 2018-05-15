@@ -16,22 +16,16 @@
 
 import 'dart:html';
 
-import 'package:convert/convert.dart';
-import 'package:crypto/crypto.dart';
-
 import '../elements.dart';
 import 'base_gadget.dart';
 import 'port.dart';
 
-/// This class implements SHA-256 but the SHA-2 family contains several
-/// different digest lengths. In the future I would like to support all of
-/// these.
-class Sha2Gadget extends BaseGadget {
-    /// The element that displays the hash.
+class UrlEncoderGadget extends BaseGadget {
+    /// The element that displays the result.
     SpanElement display;
 
     /// Constructor
-    Sha2Gadget() {
+    UrlEncoderGadget() {
         var meta = this.getMeta();
         this.display = $span();
         this._setDisplay(null);
@@ -42,7 +36,7 @@ class Sha2Gadget extends BaseGadget {
 
         this.root = $div()
             ..className = 'gadget ${meta.cssClass}'
-            ..style.width = '520px'
+            ..style.width = '280px'
             ..append(header)
             ..append(
                 $div()
@@ -51,9 +45,9 @@ class Sha2Gadget extends BaseGadget {
             );
     }
 
-    /// Return metadata for SHA-1 gadget.
+    /// Return metadata for MD5 gadget.
     GadgetMeta getMeta() {
-        return new GadgetMeta('sha2', 'hash-gadget', 'SHA-2');
+        return new GadgetMeta('url-encoder', 'web-gadget', 'URL Encode');
     }
 
     /// Mount this gadget to the DOM.
@@ -64,21 +58,18 @@ class Sha2Gadget extends BaseGadget {
         super.mount(parent);
     }
 
-    /// Calculate SHA-1 hash of the input.
+    /// URL encode the input.
     void transform(List<int> input) {
-        var data;
-        var digest;
+        var encoded;
 
         if (input == null) {
-            data = null;
-            digest = null;
+            encoded = null;
         } else {
-            data = sha256.convert(input).bytes;
-            digest = hex.encode(data);
+            encoded = Uri.encodeComponent(new String.fromCharCodes(input));
         }
 
-        this._setDisplay(digest);
-        this.outputs[0].send(data);
+        this._setDisplay(encoded);
+        this.outputs[0].send(encoded?.codeUnits);
     }
 
     /// Update the gadget's display with new data.

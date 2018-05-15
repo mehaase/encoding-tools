@@ -7,8 +7,9 @@ strings (both human-readable and binary).
 
 1. Create a new gadget source file. (Or copy an existing one.)
 2. Implement gadget functionality.
-3. Add gadget to drawer.dart.
-4. Add gadget to factory.dart.
+3. Add gadget to all.dart.
+4. Add gadget to drawer.dart.
+5. Add gadget to factory.dart.
 
 # License
 

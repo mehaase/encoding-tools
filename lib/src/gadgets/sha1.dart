@@ -61,11 +61,6 @@ class Sha1Gadget extends BaseGadget {
         super.mount(parent);
     }
 
-    /// Called when the component is destroyed.
-    void unmount() {
-        super.unmount();
-    }
-
     /// Calculate SHA-1 hash of the input.
     void transform(List<int> input) {
         var data;

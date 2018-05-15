@@ -2,7 +2,7 @@
 
 body {
     --cell-size: 20px;
-    --drawer-width: 15em;
+    --drawer-width: 16em;
     --nav-height: calc(var(--cell-size) * 3);
     --footer-height: var(--cell-size);
 
@@ -101,6 +101,7 @@ div#drawer .gadget-handle {
     background-color: var(--gadget-color);
     font-size: 1rem;
     margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Workspace */
@@ -159,10 +160,16 @@ div.input-gadget {
 div.input-gadget textarea {
     border: none;
     resize: none;
+    height: 60px;
 }
 
 div.hash-gadget {
     --gadget-color: var(--orange);
+    height: calc(var(--cell-size) * 4);
+}
+
+div.web-gadget {
+    --gadget-color: var(--blue);
     height: calc(var(--cell-size) * 4);
 }
 

@@ -67,6 +67,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.3"
+  html_unescape:
+    description:
+      name: html_unescape
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   logging:
     description:
       name: logging

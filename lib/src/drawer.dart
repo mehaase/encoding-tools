@@ -19,12 +19,8 @@ import 'dart:html';
 
 import 'base_component.dart';
 import 'elements.dart';
-import 'gadgets/base_gadget.dart';
+import 'gadgets/all.dart';
 import 'gadgets/factory.dart';
-import 'gadgets/input.dart';
-import 'gadgets/md5.dart';
-import 'gadgets/sha1.dart';
-import 'gadgets/sha2.dart';
 
 /// Displays a collection of gadgets that may be added to the workspace.
 class Drawer extends BaseComponent {
@@ -47,7 +43,12 @@ class Drawer extends BaseComponent {
             ..append($h2()..appendText('Hashes'))
             ..append(this._gadgetHandle(new Md5Gadget()))
             ..append(this._gadgetHandle(new Sha1Gadget()))
-            ..append(this._gadgetHandle(new Sha2Gadget()));
+            ..append(this._gadgetHandle(new Sha2Gadget()))
+            ..append($h2()..appendText('Web'))
+            ..append(this._gadgetHandle(new HtmlDecoderGadget()))
+            ..append(this._gadgetHandle(new HtmlEncoderGadget()))
+            ..append(this._gadgetHandle(new UrlDecoderGadget()))
+            ..append(this._gadgetHandle(new UrlEncoderGadget()));
 
         parent.append(this._root);
     }

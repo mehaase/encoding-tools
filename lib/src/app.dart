@@ -94,6 +94,9 @@ class AppComponent extends BaseComponent
             );
 
         document.onKeyPress.listen((event) {
+            if (event.target is TextAreaElement) {
+                return;
+            }
             switch (event.key) {
                 case '?':
                     event.preventDefault();

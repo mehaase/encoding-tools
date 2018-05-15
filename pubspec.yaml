@@ -7,6 +7,7 @@ environment:
 dependencies:
   convert: '^2.0.1'
   crypto: '^2.0.2'
+  html_unescape: '^0.1.5'
   logging: '^0.11.3'
 
 dev_dependencies:
