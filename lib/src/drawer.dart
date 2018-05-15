@@ -64,6 +64,11 @@ class Drawer extends BaseComponent {
         parent.append(this._root);
     }
 
+    /// Show or hide the drawer.
+    void toggle() {
+        this._root.classes.toggle('hidden');
+    }
+
     /// Remove the drawer from the DOM.
     void unmount() {
         this._root.remove();

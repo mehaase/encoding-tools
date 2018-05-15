@@ -38,9 +38,6 @@ class AppComponent extends BaseComponent
     /// The workspace is where gadgets are instantiated and connected together.
     Workspace workspace;
 
-    StreamSubscription<KeyboardEvent> _onKeyPressSubscription;
-    StreamSubscription<MouseEvent> _onClickHelpSubscription;
-
     /// Constructor.
     AppComponent() {
         Logger.root.level = Level.ALL;
@@ -66,8 +63,17 @@ class AppComponent extends BaseComponent
         var helpButton = $button()
             ..type = 'button'
             ..className = 'btn btn-primary'
+            ..style.marginRight = '1em'
             ..append($i()..className = 'fas fa-question-circle')
-            ..appendText(' Help');
+            ..appendText(' Help')
+            ..onClick.listen((event) => this.help.toggle());
+
+        var drawerButton = $button()
+            ..type = 'button'
+            ..className = 'btn btn-primary'
+            ..append($i()..className = 'fas fa-toolbox')
+            ..appendText(' Toggle Drawer')
+            ..onClick.listen((event) => this.drawer.toggle());
 
         // Mount the application component.
         parent
@@ -80,17 +86,23 @@ class AppComponent extends BaseComponent
                     ..appendText('Encoding Tools ')
                     ..append($i()..className = 'fas fa-wrench')
                 )
-                ..append(helpButton)
+                ..append(
+                    $div()
+                    ..append(helpButton)
+                    ..append(drawerButton)
+                )
             );
 
-        this._onClickHelpSubscription = helpButton.onClick.listen((event) {
-            this.help.toggle();
-        });
-
-        this._onKeyPressSubscription = document.onKeyPress.listen((event) {
-            if (event.key == '?') {
-                event.preventDefault();
-                this.help.toggle();
+        document.onKeyPress.listen((event) {
+            switch (event.key) {
+                case '?':
+                    event.preventDefault();
+                    this.help.toggle();
+                    break;
+                case 'g':
+                    event.preventDefault();
+                    this.drawer.toggle();
+                    break;
             }
         });
 

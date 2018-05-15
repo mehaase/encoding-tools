@@ -2,6 +2,7 @@
 
 body {
     --cell-size: 20px;
+    --drawer-width: 15em;
     --nav-height: calc(var(--cell-size) * 3);
     --footer-height: var(--cell-size);
 
@@ -66,13 +67,18 @@ div#drawer {
     top: var(--nav-height);
     bottom: 0;
     right: 0;
-    width: 15em;
+    width: var(--drawer-width);
     z-index: 1;
     padding: 0.5em;
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #f8f9fa;
     border-left: 1px solid #dee2e6;
+    transition: transform 1s;
+}
+
+div#drawer.hidden {
+    transform: translateX(var(--drawer-width));
 }
 
 div#drawer h1 {

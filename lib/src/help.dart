@@ -32,19 +32,20 @@ const String HELP_CONTENT = '''<h1>What is encoding tools?</h1>
 <p>
     The drawer on the right side of the screen contains all of the gadgets you
     can use. Drag a gadget onto the workspace (the area with the gridlines).
-    Create a data pipe between two gadgets by drawing a line from the output
-    port of one gadget to the input port of the other. Then enter some text into
-    the input gadget and you will see all of the connected gadgets update the
-    results as you type.
+    Connect two gadgets together by drawing a pipe from gadget's output port to
+    the other gadget's input port. Then enter some text into the input gadget
+    and you will see all of the connected gadgets update the results as you
+    type.
 </p>
-<h1>How do I delete gadgets/pipes?</h1>
+<h1>How do I delete things?</h1>
 <p>
     Right click on a gadget's header (the colored area that displays the
     gadget's name) to remove it. Right click on a pipe to remove.
 </p>
 <h1>Keyboard shortcuts</h1>
 <ul>
-    <li><code>?</code>: toggle help display
+    <li><code>?</code> toggle help
+    <li><code>g</code> toggle gadget drawer
 </ul>''';
 
 class HelpComponent extends BaseComponent

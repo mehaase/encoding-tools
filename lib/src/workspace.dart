@@ -21,7 +21,6 @@ import 'base_component.dart';
 import 'elements.dart';
 import 'gadgets/base_gadget.dart';
 import 'gadgets/input.dart';
-import 'gadgets/md5.dart';
 import 'gadgets/pipe.dart';
 import 'gadgets/port.dart';
 import 'gadgets/factory.dart';
@@ -85,16 +84,6 @@ class Workspace extends BaseComponent {
         inputGadget.moveToGrid(new Point(1, 1));
         inputGadget.mount(this._root);
         this._gadgets.add(inputGadget);
-
-        var md5Gadget1 = gadgetFactory('md5');
-        md5Gadget1.moveToGrid(new Point(3, 9));
-        md5Gadget1.mount(this._root);
-        this._gadgets.add(md5Gadget1);
-
-        var md5Gadget2 = gadgetFactory('md5');
-        md5Gadget2.moveToGrid(new Point(1, 15));
-        md5Gadget2.mount(this._root);
-        this._gadgets.add(md5Gadget2);
 
         this._startPipeSubscription = this._root.on['startPipe'].listen(
             this._onStartPipe);
