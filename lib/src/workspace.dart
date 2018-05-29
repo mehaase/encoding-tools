@@ -155,7 +155,16 @@ class Workspace extends BaseComponent {
         }
 
         if (start is OutputPort && end is InputPort) {
-            this._newPipe.connect(start, end);
+            try {
+                this._newPipe.connect(start, end);
+            } catch (RangeError) {
+                window.alert('You\'ve created a circular flow of data which has'
+                    ' caused the universe to collapse into itself and create a'
+                    ' blackhole so massive that even light cannot escape it.'
+                    ' \n\nOk not really, but you did fuck up this program and'
+                    ' I\'m gonna have to reload the page.');
+                window.location.reload();
+            }
             this._newPipe.moveEndTo(endpoint);
             this._pipes.add(this._newPipe);
         } else {
@@ -184,7 +193,10 @@ class Workspace extends BaseComponent {
     /// This is used to drag gadgets from the drawer and drop them onto the
     /// workspace.
     void _onDrop(MouseEvent event) {
-        var data = event.dataTransfer.getData('text/plain').split(';');
+        var data = event.dataTransfer
+                        .getData('application/vnd.strtools-gadget')
+                        .split(';');
+        event.preventDefault();
         var type = data[0];
         var mouseOffset = new Point(int.parse(data[1]), int.parse(data[2]));
         var client = this._root.getBoundingClientRect();

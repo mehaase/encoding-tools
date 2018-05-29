@@ -161,6 +161,7 @@ div.input-gadget textarea {
     border: none;
     resize: none;
     height: 60px;
+    width: 100%;
 }
 
 div.change-base-gadget {

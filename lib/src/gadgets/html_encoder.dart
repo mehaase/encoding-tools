@@ -87,8 +87,7 @@ class HtmlEncoderGadget extends BaseGadget {
                 ..appendText(digest);
         }
 
-        this.display
-            ..firstChild?.remove()
-            ..append(data);
+        this.display.firstChild?.remove();
+        this.display.append(data);
     }
 }

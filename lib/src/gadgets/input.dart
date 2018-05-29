@@ -38,9 +38,7 @@ class InputGadget extends BaseGadget {
 
         this.textarea = $textarea()
             ..spellcheck = false
-            ..placeholder = "Enter text here…"
-            ..cols = 40
-            ..rows = 2;
+            ..placeholder = "Enter text here…";
 
         this._keyboardSubscription = this.textarea.onKeyUp.listen(
             this._handleKeyboard);

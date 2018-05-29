@@ -121,7 +121,7 @@ class Drawer extends BaseComponent {
             ..effectAllowed = 'copy'
             // The y coordinate needs to add in the paddingTop from above.
             ..setDragImage(div, x, y + 20)
-            ..setData('text/plain', data);
+            ..setData('application/vnd.strtools-gadget', data);
 
         this._draggedGadget = gadget;
         this._draggedGadgetContainer = div;
