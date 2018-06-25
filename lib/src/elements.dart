@@ -33,6 +33,7 @@ Function $div = () => new Element.tag('div');
 Function $nav = () => new Element.tag('nav');
 Function $p = () => new Element.tag('p');
 Function $pre = () => new Element.tag('pre');
+Function $script = () => new Element.tag('script');
 Function $span = () => new Element.tag('span');
 Function $sub = () => new Element.tag('sub');
 Function $textarea = () => new Element.tag('textarea');

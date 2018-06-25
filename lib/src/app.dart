@@ -24,6 +24,7 @@ import 'base_component.dart';
 import 'drawer.dart';
 import 'elements.dart';
 import 'help.dart';
+import 'tracker.dart';
 import 'warning.dart';
 import 'workspace.dart';
 
@@ -124,6 +125,10 @@ class AppComponent extends BaseComponent
                 ' on small screens or touchscreen devices.');
             this.warning.mount(parent);
         });
+
+        if (window.location.hostname == 'encoding.tools') {
+            registerTrackingCode();
+        }
     }
 
     /// Do not allow unmounting.
