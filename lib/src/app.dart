@@ -119,11 +119,11 @@ class AppComponent extends BaseComponent
         this.help.mount(parent);
         this.workspace.mount(parent);
 
-        // window.onTouchStart.take(1).listen((event) {
-        //     this.warning = new WarningComponent('This site does not work well'
-        //         ' on small screens or touchscreen devices.');
-        //     this.warning.mount(parent);
-        // });
+        window.onTouchStart.take(1).listen((event) {
+            this.warning = new WarningComponent('This site does not work well'
+                ' on small screens or touchscreen devices.');
+            this.warning.mount(parent);
+        });
     }
 
     /// Do not allow unmounting.
