@@ -24,6 +24,7 @@ import 'base_component.dart';
 import 'drawer.dart';
 import 'elements.dart';
 import 'help.dart';
+import 'warning.dart';
 import 'workspace.dart';
 
 final Logger log = new Logger('app');
@@ -38,6 +39,9 @@ class AppComponent extends BaseComponent
 
     /// The workspace is where gadgets are instantiated and connected together.
     Workspace workspace;
+
+    /// Used to display warnings in an overlay.
+    WarningComponent warning;
 
     /// Constructor.
     AppComponent() {
@@ -113,6 +117,12 @@ class AppComponent extends BaseComponent
         this.drawer.mount(parent);
         this.help.mount(parent);
         this.workspace.mount(parent);
+
+        // window.onTouchStart.take(1).listen((event) {
+        //     this.warning = new WarningComponent('This site does not work well'
+        //         ' on small screens or touchscreen devices.');
+        //     this.warning.mount(parent);
+        // });
     }
 
     /// Do not allow unmounting.

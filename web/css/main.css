@@ -41,6 +41,18 @@ div.modal-dialog {
     max-width: 750px;
 }
 
+div.warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: orange;
+    padding: 2em;
+    font-size: 20pt;
+}
+
 /* AppComponent */
 
 div#app {
