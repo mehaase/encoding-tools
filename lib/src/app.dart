@@ -88,8 +88,9 @@ class AppComponent extends BaseComponent
                 ..append(
                     $span()
                     ..className = 'navbar-brand'
-                    ..appendText('Encoding Tools ')
+                    ..appendText('Encoding ')
                     ..append($i()..className = 'fas fa-wrench')
+                    ..appendText(' Tools ')
                 )
                 ..append(
                     $div()

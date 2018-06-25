@@ -34,6 +34,7 @@ Function $nav = () => new Element.tag('nav');
 Function $p = () => new Element.tag('p');
 Function $pre = () => new Element.tag('pre');
 Function $span = () => new Element.tag('span');
+Function $sub = () => new Element.tag('sub');
 Function $textarea = () => new Element.tag('textarea');
 
 // Shortcuts for creating SVG elements.
