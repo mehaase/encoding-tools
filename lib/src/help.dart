@@ -33,6 +33,10 @@ const String HELP_CONTENT = '''<h1>What is encoding tools?</h1>
     For more information, see this
     <a href="https://markhaa.se/introducing-encoding-tools.html">introductory blog post.</a>
 </p>
+<p>
+    Encoding tools is released under the GPL3.
+    <a href="https://github.com/mehaase/encoding-tools">See GitHub</a>
+</p>
 <h1>How do I use it?</h1>
 <p>
     The drawer on the right side of the screen contains all of the gadgets you
@@ -149,7 +153,8 @@ class HelpComponent extends BaseComponent
 
 /// Allow hrefs to the Encoding Tools blog.
 class HelpUriPolicy implements UriPolicy {
-    bool allowsUri(String uri) {
-        return uri.startsWith('https://markhaa.se');
+    bool allowsUri(String uriString) {
+        var uri = Uri.parse(uriString);
+        return uri.host == 'markhaa.se' || uri.host == 'github.com';
     }
 }
