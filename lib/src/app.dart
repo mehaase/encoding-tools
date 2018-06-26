@@ -74,6 +74,14 @@ class AppComponent extends BaseComponent
             ..appendText(' Help')
             ..onClick.listen((event) => this.help.toggle());
 
+        var repoButton = $a()
+            ..className = 'btn btn-primary'
+            ..style.marginRight = '1em'
+            ..append($i()..className = 'fab fa-github')
+            ..appendText(' View Repo')
+            ..href='https://github.com/mehaase/encoding-tools'
+            ..target='_blank';
+
         var drawerButton = $button()
             ..type = 'button'
             ..className = 'btn btn-primary'
@@ -96,6 +104,7 @@ class AppComponent extends BaseComponent
                 ..append(
                     $div()
                     ..append(helpButton)
+                    ..append(repoButton)
                     ..append(drawerButton)
                 )
             );
