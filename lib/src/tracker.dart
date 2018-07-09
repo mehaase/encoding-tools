@@ -20,18 +20,20 @@ import 'dart:js';
 
 import 'elements.dart';
 
-const String SITE_ID = '5b31330dcf25ea7a0e43b6d5';
+const String SITE_ID = 'UA-41836740-2';
 
 /// Adds tracking code to the DOM.
 void registerTrackingCode() {
-    context['_gauges'] = new JsArray();
     document.body.append(
         $script()
         ..type = 'text/javascript'
         ..async = true
-        ..id = 'gauges-tracker'
-        ..attributes['data-site-id'] = SITE_ID
-        ..attributes['data-track-path'] = 'https://track.gaug.es/track.gif'
-        ..src = 'https://d2fuc4clr7gvcn.cloudfront.net/track.js'
+        ..src = 'https://www.googletagmanager.com/gtag/js?id=${SITE_ID}'
     );
+    if (context['dataLayer'] == null) {
+        context['dataLayer'] = new JsArray();
+    }
+    var date = new JsObject(context['Date']);
+    context['dataLayer'].add(new JsArray.from(['js', date]));
+    context['dataLayer'].add(new JsArray.from(['config', SITE_ID]));
 }
