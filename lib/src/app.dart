@@ -30,6 +30,8 @@ import 'workspace.dart';
 
 final Logger log = new Logger('app');
 
+const String TRACKING_DOMAIN = 'encoding.tools';
+
 class AppComponent extends BaseComponent
 {
     /// The drawer that displays all available gadgets.
@@ -135,7 +137,7 @@ class AppComponent extends BaseComponent
             this.warning.mount(parent);
         });
 
-        if (window.location.hostname == 'encoding.tools') {
+        if (window.location.hostname == TRACKING_DOMAIN) {
             registerTrackingCode();
         }
     }
