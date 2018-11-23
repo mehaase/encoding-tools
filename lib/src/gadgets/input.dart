@@ -32,6 +32,8 @@ class InputGadget extends BaseGadget {
     /// Constructor
     InputGadget() {
         var meta = this.getMeta();
+        this.inputs = [];
+        this.outputs = [new OutputPort(0)];
 
         this.header = $div()
             ..className = 'header'
@@ -61,8 +63,6 @@ class InputGadget extends BaseGadget {
 
     /// Mount this gadget to its parent.
     void mount(Element parent) {
-        this.inputs = [];
-        this.outputs = [new OutputPort(0)..mount(this.root)];
         parent.append(this.root);
         super.mount(parent);
     }

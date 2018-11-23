@@ -35,6 +35,8 @@ class HtmlDecoderGadget extends BaseGadget {
         this._htmlUnescape = new HtmlUnescape();
         this.display = $span();
         this._setDisplay(null);
+        this.inputs = [new InputPort(0, this.transform)];
+        this.outputs = [new OutputPort(0)];
 
         this.header = $div()
             ..className = 'header'
@@ -58,8 +60,6 @@ class HtmlDecoderGadget extends BaseGadget {
 
     /// Mount this gadget to the DOM.
     void mount(Element parent) {
-        this.inputs = [new InputPort(0, this.transform)..mount(this.root)];
-        this.outputs = [new OutputPort(0)..mount(this.root)];
         parent.append(this.root);
         super.mount(parent);
     }

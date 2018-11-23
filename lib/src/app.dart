@@ -20,9 +20,11 @@ import 'dart:html';
 
 import 'package:logging/logging.dart';
 
+import 'assembly.dart';
 import 'base_component.dart';
 import 'drawer.dart';
 import 'elements.dart';
+import 'gadgets/input.dart';
 import 'help.dart';
 import 'tracker.dart';
 import 'warning.dart';
@@ -31,6 +33,7 @@ import 'workspace.dart';
 final Logger log = new Logger('app');
 
 const String TRACKING_DOMAIN = 'encoding.tools';
+const String DEFAULT_TITLE = 'Encoding Tools';
 
 class AppComponent extends BaseComponent
 {
@@ -45,6 +48,8 @@ class AppComponent extends BaseComponent
 
     /// Used to display warnings in an overlay.
     WarningComponent warning;
+
+    HtmlElement _navTitle;
 
     /// Constructor.
     AppComponent() {
@@ -88,21 +93,21 @@ class AppComponent extends BaseComponent
             ..type = 'button'
             ..className = 'btn btn-primary'
             ..append($i()..className = 'fas fa-toolbox')
-            ..appendText(' Toggle Drawer')
-            ..onClick.listen((event) => this.drawer.toggle());
+            ..appendText(' Toolbox')
+            ..onClick.listen((_) => this.drawer.toggle());
 
         // Mount the application component.
+        this._navTitle = $span()
+            ..className = 'navbar-brand'
+            ..appendText('Encoding ')
+            ..append($i()..className = 'fas fa-wrench')
+            ..appendText(' Tools ');
+
         parent
             ..append(
                 $nav()
                 ..className = 'navbar navbar-expand-lg navbar-light bg-light border-bottom justify-content-between'
-                ..append(
-                    $span()
-                    ..className = 'navbar-brand'
-                    ..appendText('Encoding ')
-                    ..append($i()..className = 'fas fa-wrench')
-                    ..appendText(' Tools ')
-                )
+                ..append(this._navTitle)
                 ..append(
                     $div()
                     ..append(helpButton)
@@ -120,7 +125,7 @@ class AppComponent extends BaseComponent
                     event.preventDefault();
                     this.help.toggle();
                     break;
-                case 'g':
+                case 't':
                     event.preventDefault();
                     this.drawer.toggle();
                     break;
@@ -137,13 +142,66 @@ class AppComponent extends BaseComponent
             this.warning.mount(parent);
         });
 
+        // Check URL hash for assembly to load, and listen for changes to URL
+        // hash.
+        this._loadAssemblyFromHash();
+        window.onHashChange.listen((_) => this._loadAssemblyFromHash());
+
         if (window.location.hostname == TRACKING_DOMAIN) {
             registerTrackingCode();
         }
     }
 
+    /// Set the application title.
+    ///
+    /// This updates the window title and the title displayed in the navbar.
+    void setTitle(String title) {
+        var document = window.document as HtmlDocument;
+        if (title == null) {
+            document.title = DEFAULT_TITLE;
+            this._navTitle
+                ..lastChild.remove()
+                ..appendText(' Tools');
+        } else {
+            document.title = '$title—${DEFAULT_TITLE}';
+            this._navTitle
+                ..lastChild.remove()
+                ..appendText(' Tools: ${title}');
+        }
+    }
+
     /// Do not allow unmounting.
     void unmount() {
-        throw new Exception('The application component cannot be unmounted');
+        throw new Exception('The application component cannot be unmounted.');
+    }
+
+    /// Load an assembly based on the URL hash.
+    void _loadAssemblyFromHash() {
+        var name;
+        try {
+            name = window.location.hash.substring(1);
+        } catch (RangeError) {
+            name = '';
+        }
+        if (name.isEmpty) {
+            this.setTitle(null);
+            var inputGadget = new InputGadget();
+            inputGadget.moveToGrid(new Point(1, 1));
+            this.workspace.addGadget(inputGadget);
+        } else {
+            try {
+                var assembly = loadStaticAssembly(name);
+                this.workspace.clear();
+                for (var gadget in assembly.gadgets) {
+                    this.workspace.addGadget(gadget);
+                }
+                for (var pipe in assembly.pipes) {
+                    this.workspace.addPipe(pipe);
+                }
+                this.setTitle(assembly.name);
+            } on AssemblyNotFound catch (anf) {
+                print('Could not find assembly: ${anf.name}.');
+            }
+        }
     }
 }

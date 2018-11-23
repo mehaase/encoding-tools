@@ -20,6 +20,7 @@ import 'dart:svg';
 
 // Shortcuts for creating HTML elements.
 Function $a = () => new Element.tag('a');
+Function $br = () => new Element.tag('br');
 Function $button = () => new Element.tag('button');
 Function $em = () => new Element.tag('em');
 Function $h1 = () => new Element.tag('h1');

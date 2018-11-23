@@ -21,10 +21,9 @@ import 'dart:html';
 import 'base_component.dart';
 import 'elements.dart';
 import 'gadgets/base_gadget.dart';
-import 'gadgets/input.dart';
+import 'gadgets/factory.dart';
 import 'gadgets/pipe.dart';
 import 'gadgets/port.dart';
-import 'gadgets/factory.dart';
 
 /// A view container for gadgets..
 class Workspace extends BaseComponent {
@@ -77,14 +76,37 @@ class Workspace extends BaseComponent {
         this._pipes = [];
     }
 
+    /// Add a gadget to the workspace.
+    void addGadget(BaseGadget gadget) {
+        gadget.mount(this._root);
+        this._gadgets.add(gadget);
+    }
+
+    /// Add a pipe to the workspace. The pipe must already be connected to
+    /// input and output ports.
+    void addPipe(Pipe pipe) {
+        pipe.mount(this._root);
+        var workspaceRect = this._root.offset;
+        pipe.moveStartTo(pipe.output.getCenter() - workspaceRect.topLeft);
+        pipe.moveEndTo(pipe.input.getCenter() - workspaceRect.topLeft);
+        this._pipes.add(pipe);
+    }
+
+    /// Clear all gadgets and pipes in the workspace.
+    void clear() {
+        while (this._pipes.length > 0) {
+            var pipe = this._pipes.removeLast();
+            pipe.disconnect();
+            pipe.unmount();
+        }
+        while (this._gadgets.length > 0) {
+            this._gadgets.removeLast().unmount();
+        }
+    }
+
     /// Create and mount the workspace component.
     void mount(Element parent) {
         this._root = $div()..id = 'workspace';
-
-        var inputGadget = gadgetFactory('input');
-        inputGadget.moveToGrid(new Point(1, 1));
-        inputGadget.mount(this._root);
-        this._gadgets.add(inputGadget);
 
         this._startPipeSubscription = this._root.on['startPipe'].listen(
             this._onStartPipe);
@@ -229,7 +251,6 @@ class Workspace extends BaseComponent {
     void _removeGadget(Event event) {
         var gadget = (event as CustomEvent).detail;
         for (var pipe in gadget.getPipes()) {
-            print(pipe);
             pipe.disconnect();
             pipe.unmount();
             this._pipes.remove(pipe);

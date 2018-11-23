@@ -84,6 +84,8 @@ abstract class BaseGadget extends BaseComponent {
 
     /// Attach this component to the DOM.
     void mount(Element parent) {
+        this.inputs.forEach((input) => input.mount(this.root));
+        this.outputs.forEach((input) => input.mount(this.root));
         if (this.header != null) {
             this.dragEvents = this.header.onMouseDown.listen(this.startMove);
             this.rightClickEvents = this.header.onContextMenu.listen((event) {

@@ -39,7 +39,7 @@ class Drawer extends BaseComponent {
     void mount(Element parent) {
         this._root = $div()
             ..id = 'drawer'
-            ..append($h1()..appendText('Gadget Drawer'))
+            ..append($h1()..appendText('Gadgets'))
             ..append(this._gadgetHandle(new InputGadget()))
             ..append($h2()..appendText('Change Base'))
             ..append(this._gadgetHandle(new Base64DecoderGadget()))
@@ -54,7 +54,30 @@ class Drawer extends BaseComponent {
             ..append(this._gadgetHandle(new HtmlDecoderGadget()))
             ..append(this._gadgetHandle(new HtmlEncoderGadget()))
             ..append(this._gadgetHandle(new UrlDecoderGadget()))
-            ..append(this._gadgetHandle(new UrlEncoderGadget()));
+            ..append(this._gadgetHandle(new UrlEncoderGadget()))
+            ..append($h1()..appendText('Assemblies'))
+            ..append($a()..href="#base64-encoder"..appendText("Base64 Encoder"))
+            ..appendText(' / ')
+            ..append($a()..href="#base64-decoder"..appendText("Decoder"))
+            ..append($br())
+            ..append($a()..href="#hex-encoder"..appendText("Hex Encoder"))
+            ..appendText(' / ')
+            ..append($a()..href="#hex-decoder"..appendText("Decoder"))
+            ..append($br())
+            ..append($a()..href="#html-encoder"..appendText("HTML Encoder"))
+            ..appendText(' / ')
+            ..append($a()..href="#html-decoder"..appendText("Decoder"))
+            ..append($br())
+            ..append($a()..href="#md5-hash"..appendText("Hash MD5"))
+            ..appendText(' / ')
+            ..append($a()..href="#sha1-hash"..appendText("SHA-1"))
+            ..appendText(' / ')
+            ..append($a()..href="#sha2-hash"..appendText("SHA-2"))
+            ..append($br())
+            ..append($a()..href="#url-encoder"..appendText("URL Encoder"))
+            ..appendText(' / ')
+            ..append($a()..href="#url-decoder"..appendText("Decoder"))
+            ..append($br());
 
         parent.append(this._root);
     }

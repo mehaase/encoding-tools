@@ -39,7 +39,7 @@ const String HELP_CONTENT = '''<h1>What is encoding tools?</h1>
 </p>
 <h1>How do I use it?</h1>
 <p>
-    The drawer on the right side of the screen contains all of the gadgets you
+    The toolbox on the right side of the screen contains all of the gadgets you
     can use. Drag a gadget onto the workspace (the area with the gridlines).
     Connect two gadgets together by drawing a pipe from gadget's output port to
     the other gadget's input port. Then enter some text into the input gadget
@@ -62,7 +62,7 @@ const String HELP_CONTENT = '''<h1>What is encoding tools?</h1>
 <h1>Keyboard shortcuts</h1>
 <ul>
     <li><code>?</code> toggle help
-    <li><code>g</code> toggle gadget drawer
+    <li><code>t</code> toggle toolbox
 </ul>''';
 
 class HelpComponent extends BaseComponent
@@ -73,11 +73,17 @@ class HelpComponent extends BaseComponent
 
     /// Attach the help component to the DOM.
     void mount(Element parent) {
-        var closeEl = $span()
-            ..attributes['aria-hidden'] = 'true'
+        var closeEl = $button()
+            ..type = 'button'
+            ..className = 'close'
+            ..attributes['aria-label'] = 'Close'
             ..append(
-                $i()
-                ..className = 'far fa-times-circle'
+                $span()
+                ..attributes['aria-hidden'] = 'true'
+                ..append(
+                    $i()
+                    ..className = 'far fa-times-circle'
+                )
             );
 
         this._onClickSubscription = closeEl.onClick.listen((event) {
@@ -91,13 +97,7 @@ class HelpComponent extends BaseComponent
                 ..className = 'modal-title'
                 ..appendText('Help for Encoding Tools')
             )
-            ..append(
-                $button()
-                ..type = 'button'
-                ..className = 'close'
-                ..attributes['aria-label'] = 'Close'
-                ..append(closeEl)
-            );
+            ..append(closeEl);
 
         var nodeValidator = new NodeValidatorBuilder()
             ..allowHtml5(uriPolicy: new HelpUriPolicy());

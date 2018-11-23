@@ -56,7 +56,11 @@ class InputPort extends BaseComponent {
     /// Port number is used to place the port in the proper position.
     /// Handler is a callback that takes a `List<int>` to receive data from
     /// this port.
-    InputPort(this._portNum, this._handler);
+    InputPort(this._portNum, this._handler) {
+        this._div = $div()..className = 'input-port port${_portNum}';
+        this._mouseDownEvents = this._div.onMouseDown.listen(this._onMouseDown);
+        this._mouseUpEvents = this._div.onMouseUp.listen(this._onMouseUp);
+    }
 
     /// Connect this input to the specified output port.
     void connect(Pipe pipe) {
@@ -95,9 +99,6 @@ class InputPort extends BaseComponent {
 
     /// Mount this port to the DOM.
     void mount(Element parent) {
-        this._div = $div()..className = 'input-port port${_portNum}';
-        this._mouseDownEvents = this._div.onMouseDown.listen(this._onMouseDown);
-        this._mouseUpEvents = this._div.onMouseUp.listen(this._onMouseUp);
         parent.append(this._div);
     }
 
