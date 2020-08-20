@@ -25,19 +25,24 @@ const String GOOGLE_ANALYTICS_ID = 'UA-41836740-2';
 
 /// Adds tracking code to the DOM.
 void registerTrackingCode() {
-    if (context['dataLayer'] == null) {
-        context['dataLayer'] = JsArray();
-    }
-
-    var dataLayer = context['dataLayer'];
+    context['ENCODING_TOOLS_TRACKER_ID'] = GOOGLE_ANALYTICS_ID;
     var trackerUrl = TRACKER_URL + GOOGLE_ANALYTICS_ID;
 
-    dataLayer.add(JsArray.from(['js', DateTime.now()]));
-    dataLayer.add(JsArray.from(['config', GOOGLE_ANALYTICS_ID]));
+    if (document.querySelector('script[src="tracker.js"]') == null) {
+      document.body.append(
+          $script()
+          ..type = 'text/javascript'
+          ..async = true
+          ..src = 'tracker.js'
+      );
+    }
 
-    document.body.append(
-        $script()
-        ..type = 'text/javascript'
-        ..src = trackerUrl
-    );
+    if (document.querySelector('script[src="$trackerUrl"]') == null) {
+      document.body.append(
+          $script()
+          ..type = 'text/javascript'
+          ..async = true
+          ..src = trackerUrl
+      );
+    }
 }
