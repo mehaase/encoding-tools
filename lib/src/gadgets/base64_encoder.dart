@@ -67,7 +67,7 @@ class Base64EncoderGadget extends BaseGadget {
         if (input == null) {
             encoded = null;
         } else {
-            encoded = BASE64.encode(input);
+            encoded = base64Encode(input);
         }
 
 

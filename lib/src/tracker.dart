@@ -20,28 +20,24 @@ import 'dart:js';
 
 import 'elements.dart';
 
-const String MATOMO_DOMAIN = 'semisuper.innocraft.cloud';
-const String MATOMO_SITE_ID = '2';
+const String TRACKER_URL = 'https://www.googletagmanager.com/gtag/js?id=';
+const String GOOGLE_ANALYTICS_ID = 'UA-41836740-2';
 
 /// Adds tracking code to the DOM.
 void registerTrackingCode() {
-    if (context['_paq'] == null) {
-        context['_paq'] = new JsArray();
+    if (context['dataLayer'] == null) {
+        context['dataLayer'] = JsArray();
     }
 
-    var paq = context['_paq'];
-    var baseUrl = 'https://${MATOMO_DOMAIN}/';
-    var trackerUrl = '${baseUrl}piwik.php';
-    var javascriptUrl = '${baseUrl}piwik.js';
+    var dataLayer = context['dataLayer'];
+    var trackerUrl = TRACKER_URL + GOOGLE_ANALYTICS_ID;
 
-    paq.add(new JsArray.from(['trackPageView']));
-    paq.add(new JsArray.from(['enableLinkTracking']));
-    paq.add(new JsArray.from(['setTrackerUrl', trackerUrl]));
-    paq.add(new JsArray.from(['setSiteId', MATOMO_SITE_ID]));
+    dataLayer.add(JsArray.from(['js', DateTime.now()]));
+    dataLayer.add(JsArray.from(['config', GOOGLE_ANALYTICS_ID]));
 
     document.body.append(
         $script()
         ..type = 'text/javascript'
-        ..src = javascriptUrl
+        ..src = trackerUrl
     );
 }

@@ -66,7 +66,7 @@ class HtmlEncoderGadget extends BaseGadget {
         if (input == null) {
             encoded = null;
         } else {
-            encoded = HTML_ESCAPE.convert(new String.fromCharCodes(input));
+            encoded = htmlEscape.convert(new String.fromCharCodes(input));
         }
 
         this._setDisplay(encoded);

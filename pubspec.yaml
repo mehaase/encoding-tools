@@ -2,20 +2,17 @@ name: encoding_tools
 homepage: https://github.com/mehaase/encoding_tools
 
 environment:
-  sdk: '>=1.12.0 <2.0.0'
+  sdk: '>=2.7.2 <3.0.0'
 
 dependencies:
   convert: '^2.0.1'
   crypto: '^2.0.2'
-  html_unescape: '^0.1.5'
+  html_unescape: '^1.0.1'
   logging: '^0.11.3'
 
 dev_dependencies:
-  browser: ^0.10.0
-  dart_to_js_script_rewriter: ^1.0.1
-
-transformers:
-- dart_to_js_script_rewriter
+  build_runner: ^1.6.2
+  build_web_compilers: ^2.0.0
 
 web:
   compiler:

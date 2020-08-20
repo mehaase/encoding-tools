@@ -68,7 +68,7 @@ class Base64DecoderGadget extends BaseGadget {
             encoded = null;
             display = null;
         } else {
-            encoded = BASE64.decode(new String.fromCharCodes(input));
+            encoded = base64Decode(new String.fromCharCodes(input));
             display = new String.fromCharCodes(encoded);
         }
 
