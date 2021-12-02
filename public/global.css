@@ -1,5 +1,3 @@
-/* Document */
-
 body {
     --cell-size: 20px;
     --drawer-width: 18em;
@@ -14,7 +12,7 @@ pre {
     font-family: 'Share Tech Mono', monospace;
 }
 
-.loader {
+#loading {
     position: fixed;
     top: 0; left: 0; bottom: 0; right: 0;
     padding-top: 10rem;
@@ -51,83 +49,6 @@ div.warning {
     background-color: orange;
     padding: 2em;
     font-size: 20pt;
-}
-
-/* AppComponent */
-
-div#app {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-nav.navbar {
-    height: calc(var(--nav-height) + 1px);
-    z-index: 1;
-}
-
-nav.navbar .navbar-brand {
-    font-size: 1.6rem;
-}
-
-/* Drawer */
-
-div#drawer {
-    position: fixed;
-    top: var(--nav-height);
-    bottom: 0;
-    right: 0;
-    width: var(--drawer-width);
-    z-index: 1;
-    padding: 0.5em;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background-color: #f8f9fa;
-    border-left: 1px solid #dee2e6;
-    transition: transform 1s;
-}
-
-div#drawer.hidden {
-    transform: translateX(var(--drawer-width));
-}
-
-div#drawer h1 {
-    font-size: 1.5rem;
-    text-align: center;
-    margin-top: 1rem;
-}
-
-div#drawer h2 {
-    font-size: 1.2rem;
-    text-align: center;
-    margin-top: 1rem;
-}
-
-div#drawer .gadget-handle {
-    display: inline-block;
-    cursor: move;
-    height: 2rem;
-    padding: 0.3rem 0.8rem;
-    background-color: var(--gadget-color);
-    font-size: 1rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-/* Workspace */
-
-div#workspace {
-    position: fixed;
-    top: var(--nav-height);
-    left: 0;
-    bottom: 0;
-    right: 0;
-    overflow: auto;
-
-    background-image: url(/img/grid.png);
-    background-repeat: repeat;
 }
 
 /* Gadgets */
@@ -222,7 +143,7 @@ div.output-port {
     background-color: white;
 }
 
-div#workspace:not(.highlight-available-input-ports) div.output-port:hover {;
+div#workspace:not(.highlight-available-input-ports) div.output-port:hover {
     cursor: crosshair;
     border-color: blue;
     background-color: blue;
