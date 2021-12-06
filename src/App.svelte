@@ -1,19 +1,43 @@
 <script>
     import { onMount } from "svelte";
+    import Help from "./Help.svelte";
     import Nav from "./Nav.svelte";
     import Toolbox from "./Toolbox.svelte";
     import Workspace from "./Workspace.svelte";
+
+    let toolboxVisible = true;
+    let helpVisible = false;
 
     onMount(() => {
         // Remove the loading screen.
         document.querySelector("div#loading").remove();
     });
+
+    // Handle global keyboard shorcuts.
+    function handleKeyDown(event) {
+        switch (event.key) {
+            case "?":
+                helpVisible = !helpVisible;
+                break;
+            case "t":
+                toolboxVisible = !toolboxVisible;
+                break;
+        }
+    }
 </script>
 
+<svelte:window on:keydown={handleKeyDown} />
+
 <main>
-    <Nav />
+    <Nav
+        on:toggleToolbox={() => (toolboxVisible = !toolboxVisible)}
+        on:showHelp={() => (helpVisible = true)}
+    />
     <Workspace />
-    <Toolbox />
+    <Toolbox hidden={!toolboxVisible} />
+    {#if helpVisible}
+        <Help on:hideHelp={() => (helpVisible = false)} />
+    {/if}
 </main>
 
 <style>

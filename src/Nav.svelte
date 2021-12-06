@@ -1,17 +1,38 @@
+<script>
+    import { createEventDispatcher } from "svelte";
+
+    let toolboxVisible = true;
+
+    const dispatch = createEventDispatcher();
+
+    function toggleToolbox(even) {
+        toolboxVisible = !toolboxVisible;
+        dispatch("toggleToolbox");
+    }
+</script>
+
 <nav
     class="navbar navbar-expand-lg navbar-light bg-light border-bottom justify-content-between"
 >
     <span class="navbar-brand">Encoding <i class="fas fa-wrench" /> Tools</span>
     <div>
-        <button type="button" class="btn btn-primary" style="margin-right: 1em;"
-            ><i class="fas fa-question-circle" /> Help</button
-        ><a
+        <button
+            on:click={toggleToolbox}
+            type="button"
             class="btn btn-primary"
             style="margin-right: 1em;"
-            href="https://github.com/mehaase/encoding-tools"
-            target="_blank"><i class="fab fa-github" /> View Repo</a
-        ><button type="button" class="btn btn-primary"
-            ><i class="fas fa-toolbox" /> Toolbox</button
+            ><i class="fas fa-toolbox" />
+            {#if toolboxVisible}
+                Hide
+            {:else}
+                Show
+            {/if}
+            Toolbox
+        </button><button
+            on:click={() => dispatch("showHelp", null)}
+            type="button"
+            class="btn btn-primary"
+            ><i class="fas fa-question-circle" /> Help</button
         >
     </div>
 </nav>

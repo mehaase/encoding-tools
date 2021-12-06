@@ -1,4 +1,8 @@
-<div id="toolbox">
+<script>
+    export let hidden;
+</script>
+
+<div id="toolbox" class:hidden>
     <h1>Gadgets</h1>
     <div class="gadget-handle input-gadget" draggable="true">Input</div>
     <h2>Change Base</h2>
