@@ -42,14 +42,16 @@
                     </p>
                     <p>
                         For more information, see this
-                        <a href="https://markhaa.se/series/encoding-tools/"
-                            >series of blog posts.</a
+                        <a
+                            href="https://markhaa.se/series/encoding-tools/"
+                            target="_blank">series of blog posts.</a
                         >
                     </p>
                     <p>
                         Encoding tools is released under the GPL3.
-                        <a href="https://github.com/mehaase/encoding-tools"
-                            >Go to the GitHub repo.</a
+                        <a
+                            href="https://github.com/mehaase/encoding-tools"
+                            target="_blank">Go to the GitHub repo.</a
                         >
                     </p>
                     <h1>How do I use it?</h1>

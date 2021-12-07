@@ -1,45 +1,75 @@
 <script>
+    import {
+        HexEncodeGadget,
+        HexDecodeGadget,
+        Base64EncodeGadget,
+        Base64DecodeGadget,
+    } from "./gadgets/ChangeBaseGadgets";
+    import { Md5Gadget, Sha1Gadget, Sha2Gadget } from "./gadgets/HashGadgets";
+    import { InputGadget } from "./gadgets/InputGadgets";
+    import {
+        UrlEncodeGadget,
+        UrlDecodeGadget,
+        HtmlEncodeGadget,
+        HtmlDecodeGadget,
+    } from "./gadgets/WebGadgets";
+
     export let hidden;
+
+    /**
+     * Represents the version of a gadget that is seen in the toolbox.
+     */
+    class GadgetHandle {
+        constructor(factory) {
+            this.factory = factory;
+            let gadget = factory();
+            this.family = gadget.family;
+            this.cssClass = gadget.cssClass;
+            this.title = gadget.title;
+        }
+    }
+
+    let gadgetHandles = [
+        new GadgetHandle(() => new InputGadget()),
+        new GadgetHandle(() => new HexEncodeGadget()),
+        new GadgetHandle(() => new HexDecodeGadget()),
+        new GadgetHandle(() => new Base64EncodeGadget()),
+        new GadgetHandle(() => new Base64DecodeGadget()),
+        new GadgetHandle(() => new Md5Gadget()),
+        new GadgetHandle(() => new Sha1Gadget()),
+        new GadgetHandle(() => new Sha2Gadget()),
+        new GadgetHandle(() => new UrlEncodeGadget()),
+        new GadgetHandle(() => new UrlDecodeGadget()),
+        new GadgetHandle(() => new HtmlEncodeGadget()),
+        new GadgetHandle(() => new HtmlDecodeGadget()),
+    ];
+
+    let families = [];
+    let gadgetHandlesByFamily = {};
+
+    for (let gadgetHandle of gadgetHandles) {
+        let family = gadgetHandle.family;
+        if (family in gadgetHandlesByFamily) {
+            gadgetHandlesByFamily[family].push(gadgetHandle);
+        } else {
+            families.push(family);
+            gadgetHandlesByFamily[family] = [gadgetHandle];
+        }
+    }
 </script>
 
 <div id="toolbox" class:hidden>
-    <h1>Gadgets</h1>
-    <div class="gadget-handle input-gadget" draggable="true">Input</div>
-    <h2>Change Base</h2>
-    <div class="gadget-handle change-base-gadget" draggable="true">
-        Base64 Decode
-    </div>
-    <div class="gadget-handle change-base-gadget" draggable="true">
-        Base64 Encode
-    </div>
-    <div class="gadget-handle change-base-gadget" draggable="true">
-        Hex Decode
-    </div>
-    <div class="gadget-handle change-base-gadget" draggable="true">
-        Hex Encode
-    </div>
-    <h2>Hashes</h2>
-    <div class="gadget-handle hash-gadget" draggable="true">MD5</div>
-    <div class="gadget-handle hash-gadget" draggable="true">SHA-1</div>
-    <div class="gadget-handle hash-gadget" draggable="true">SHA-2</div>
-    <h2>Web</h2>
-    <div class="gadget-handle web-gadget" draggable="true">HTML Decode</div>
-    <div class="gadget-handle web-gadget" draggable="true">HTML Encode</div>
-    <div class="gadget-handle web-gadget" draggable="true">URL Decode</div>
-    <div class="gadget-handle web-gadget" draggable="true">URL Encode</div>
-    <h1>Assemblies</h1>
-    <a href="#base64-encoder">Base64 Encoder</a> /
-    <a href="#base64-decoder">Decoder</a><br /><a href="#hex-encoder"
-        >Hex Encoder</a
-    >
-    / <a href="#hex-decoder">Decoder</a><br /><a href="#html-encoder"
-        >HTML Encoder</a
-    >
-    / <a href="#html-decoder">Decoder</a><br /><a href="#md5-hash">Hash MD5</a>
-    / <a href="#sha1-hash">SHA-1</a> / <a href="#sha2-hash">SHA-2</a><br /><a
-        href="#url-encoder">URL Encoder</a
-    >
-    / <a href="#url-decoder">Decoder</a><br />
+    {#each families as family}
+        <h2>{family}</h2>
+        {#each gadgetHandlesByFamily[family] as gadgetHandle}
+            <div
+                class="gadget-handle {gadgetHandle.cssClass}-gadget"
+                draggable="true"
+            >
+                {gadgetHandle.title}
+            </div>
+        {/each}
+    {/each}
 </div>
 
 <style>
