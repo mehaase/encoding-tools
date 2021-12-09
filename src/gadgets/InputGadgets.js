@@ -1,4 +1,5 @@
 import BaseGadget from './BaseGadget'
+import gadgetRegistry from './GadgetRegistry';
 
 class BaseInputGadget extends BaseGadget {
     /**
@@ -9,7 +10,7 @@ class BaseInputGadget extends BaseGadget {
         super(x, y);
         this.family = "Input";
         this.cssClass = "input";
-        this.defaultHeight = 6;
+        this.defaultHeight = 6 * 20;
     }
 }
 
@@ -23,3 +24,4 @@ export class InputGadget extends BaseInputGadget {
         this.title = "Text Input";
     }
 }
+gadgetRegistry.register((...args) => new InputGadget(...args));

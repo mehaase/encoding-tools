@@ -5,10 +5,10 @@
 
 <div
     class="gadget {gadget.cssClass}-gadget"
-    style="left: calc(var(--cell-size) * {gadget.x});
-           top: calc(var(--cell-size) * {gadget.y});
-           width: calc(var(--cell-size) * {width ?? gadget.defaultWidth});
-           height: calc(var(--cell-size) * {height ?? gadget.defaultHeight});"
+    style="left: {gadget.x}px;
+           top: {gadget.y}px;
+           width: {width ?? gadget.defaultWidth}px;
+           height: {height ?? gadget.defaultHeight}px;"
 >
     <div class="header">{gadget.title}</div>
     <div class="content">

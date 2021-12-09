@@ -1,4 +1,5 @@
 import BaseGadget from './BaseGadget'
+import gadgetRegistry from './GadgetRegistry';
 
 class BaseWebGadget extends BaseGadget {
     /**
@@ -22,6 +23,7 @@ export class UrlEncodeGadget extends BaseWebGadget {
         this.title = "URL Encode";
     }
 }
+gadgetRegistry.register((...args) => new UrlEncodeGadget(...args));
 
 export class UrlDecodeGadget extends BaseWebGadget {
     /**
@@ -33,6 +35,7 @@ export class UrlDecodeGadget extends BaseWebGadget {
         this.title = "URL Decode";
     }
 }
+gadgetRegistry.register((...args) => new UrlDecodeGadget(...args));
 
 export class HtmlEncodeGadget extends BaseWebGadget {
     /**
@@ -41,9 +44,10 @@ export class HtmlEncodeGadget extends BaseWebGadget {
      */
     constructor(x, y) {
         super(x, y);
-        this.title = "URL Encode";
+        this.title = "HTML Encode";
     }
 }
+gadgetRegistry.register((...args) => new HtmlEncodeGadget(...args));
 
 export class HtmlDecodeGadget extends BaseWebGadget {
     /**
@@ -52,6 +56,7 @@ export class HtmlDecodeGadget extends BaseWebGadget {
      */
     constructor(x, y) {
         super(x, y);
-        this.title = "URL Decode";
+        this.title = "HTML Decode";
     }
 }
+gadgetRegistry.register((...args) => new HtmlDecodeGadget(...args));

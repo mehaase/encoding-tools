@@ -1,4 +1,5 @@
 import BaseGadget from './BaseGadget'
+import gadgetRegistry from './GadgetRegistry';
 
 class BaseHashGadget extends BaseGadget {
     /**
@@ -22,6 +23,7 @@ export class Md5Gadget extends BaseHashGadget {
         this.title = "MD5";
     }
 }
+gadgetRegistry.register((...args) => new Md5Gadget(...args));
 
 export class Sha1Gadget extends BaseHashGadget {
     /**
@@ -33,6 +35,7 @@ export class Sha1Gadget extends BaseHashGadget {
         this.title = "SHA-1";
     }
 }
+gadgetRegistry.register((...args) => new Sha1Gadget(...args));
 
 export class Sha2Gadget extends BaseHashGadget {
     /**
@@ -44,3 +47,4 @@ export class Sha2Gadget extends BaseHashGadget {
         this.title = "SHA-2";
     }
 }
+gadgetRegistry.register((...args) => new Sha2Gadget(...args));

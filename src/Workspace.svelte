@@ -1,21 +1,51 @@
 <script>
     import Gadget from "./Gadget.svelte";
+    import gadgetRegistry from "./gadgets/GadgetRegistry";
     import { HexEncodeGadget } from "./gadgets/ChangeBaseGadgets";
     import { Md5Gadget } from "./gadgets/HashGadgets";
     import { InputGadget } from "./gadgets/InputGadgets";
     import { UrlEncodeGadget } from "./gadgets/WebGadgets";
 
-    const gadget3 = new InputGadget(1, 1);
-    const gadget1 = new HexEncodeGadget(2, 9);
-    const gadget2 = new Md5Gadget(3, 15);
-    const gadget4 = new UrlEncodeGadget(4, 21);
+    let gadgets = [
+        // new InputGadget(1 * 20, 1 * 20),
+        // new HexEncodeGadget(2 * 20, 9 * 20),
+        // new Md5Gadget(3 * 20, 15 * 20),
+        // new UrlEncodeGadget(4 * 20, 21 * 20),
+    ];
+
+    // Handle drag-over events in the workspace.
+    //
+    // This is used to drag gadgets from the drawer and drop them onto the
+    // workspace.
+    function handleDragOver(event) {
+        event.preventDefault();
+    }
+
+    // Handle drop events in the workspace.
+    //
+    // This is used to drag gadgets from the drawer and drop them onto the
+    // workspace.
+    function handleDrop(event) {
+        event.preventDefault();
+        let gadgetInfo = JSON.parse(
+            event.dataTransfer.getData("application/vnd.encodingtools-gadget")
+        );
+
+        let newGadget = gadgetRegistry.build(
+            gadgetInfo.classId,
+            event.clientX - gadgetInfo.offsetX,
+            event.clientY - gadgetInfo.offsetY - 60
+        );
+        console.log(newGadget);
+        gadgets.push(newGadget);
+        gadgets = gadgets;
+    }
 </script>
 
-<div id="workspace">
-    <Gadget gadget={gadget1} />
-    <Gadget gadget={gadget2} />
-    <Gadget gadget={gadget3} />
-    <Gadget gadget={gadget4} />
+<div id="workspace" on:dragover={handleDragOver} on:drop={handleDrop}>
+    {#each gadgets as gadget (gadget.id)}
+        <Gadget {gadget} />
+    {/each}
 </div>
 
 <style>
