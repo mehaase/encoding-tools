@@ -1,5 +1,10 @@
 <script>
+    import { createEventDispatcher } from "svelte";
+
     export let gadget;
+
+    const dispatch = createEventDispatcher();
+
     let width, height;
 </script>
 
@@ -10,15 +15,31 @@
            width: {width ?? gadget.defaultWidth}px;
            height: {height ?? gadget.defaultHeight}px;"
 >
-    <div class="header">{gadget.title}</div>
-    <div class="content">
-        <textarea
-            spellcheck="false"
-            placeholder="Enter text here…"
-            style="height: 2em;"
+    <div class="header">
+        {gadget.title}
+        <i
+            class="far fa-times-circle"
+            title="Delete"
+            on:click={() => dispatch("delete")}
         />
+        {#if gadget.isEditable}
+            <i class="far fa-clipboard" title="Paste" />
+        {/if}
+        <i class="far fa-clone" title="Copy" />
     </div>
-    <div class="output-port port0" />
+    <div class="content">
+        {#if gadget.isEditable}
+            <textarea spellcheck="false" placeholder="Enter text here…" />
+        {:else}
+            <p class="user-select">placeholder</p>
+        {/if}
+    </div>
+    {#each gadget.inputPorts as port, index}
+        <div class="input-port port{index}" />
+    {/each}
+    {#each gadget.outputPorts as port, index}
+        <div class="output-port port{index}" />
+    {/each}
 </div>
 
 <style>
@@ -40,14 +61,20 @@
         background-color: var(--gadget-color);
     }
 
-    div.gadget .content {
-        padding: 0.75rem 0.5rem;
+    div.gadget .header i {
+        float: right;
+        margin-top: 0.2em;
+        margin-right: 0.5em;
+        cursor: pointer;
     }
 
-    div.gadget .content pre {
-        padding: 5px;
-        margin-bottom: 0;
-        overflow: hidden;
+    div.gadget .header i:hover {
+        text-shadow: 0 0 10px var(--light);
+        color: var(--light);
+    }
+
+    div.gadget .content {
+        padding: 0.75rem 0.5rem;
     }
 
     div.gadget .content span.null {
@@ -72,8 +99,8 @@
 
     div.input-port {
         top: calc(-1 * var(--cell-size) * 0.75);
-        border-top-left-radius: 30%;
-        border-top-right-radius: 30%;
+        border-top-left-radius: 40%;
+        border-top-right-radius: 40%;
         background-color: var(--gadget-color);
     }
 
@@ -87,8 +114,8 @@
     div.output-port {
         bottom: calc(-1 * var(--cell-size) * 0.75);
         border-top: none;
-        border-bottom-left-radius: 30%;
-        border-bottom-right-radius: 30%;
+        border-bottom-left-radius: 40%;
+        border-bottom-right-radius: 40%;
         background-color: white;
     }
 

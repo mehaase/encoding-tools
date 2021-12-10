@@ -100,12 +100,6 @@
         transform: translateX(var(--drawer-width));
     }
 
-    div#toolbox h1 {
-        font-size: 1.5rem;
-        text-align: center;
-        margin-top: 1rem;
-    }
-
     div#toolbox h2 {
         font-size: 1.2rem;
         text-align: center;

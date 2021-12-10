@@ -1,7 +1,7 @@
 let gadgetCounter = 0;
 
 // Gadget classes encapsulate behavior about gadgets.
-export default class BaseGadget {
+export class BaseGadget {
     /**
      * Initialize the gadget model to reasonable defaults.
      * @param {number} x
@@ -16,6 +16,9 @@ export default class BaseGadget {
         this.y = y;
         this.defaultWidth = 16 * 20;
         this.defaultHeight = 4 * 20;
+        this.inputPorts = new Array();
+        this.outputPorts = new Array();
+        this.isEditable = false;
     }
 
     /**
@@ -27,11 +30,21 @@ export default class BaseGadget {
     }
 
     /**
-     * Default implementation of transform is an identity function.
+     * The default transform is an identity function. Subclasses must
+     * override this.
      * @param  {...any} inputs
      * @returns The inputs as a new array.
      */
     transform(...inputs) {
         return [...inputs];
+    }
+}
+
+/**
+ * This is a dummy class for now, but reserved for future expansion
+ * of features on ports.
+ */
+export class Port {
+    constructor() {
     }
 }

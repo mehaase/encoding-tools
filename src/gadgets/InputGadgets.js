@@ -1,4 +1,4 @@
-import BaseGadget from './BaseGadget'
+import { BaseGadget, Port } from './BaseGadget'
 import gadgetRegistry from './GadgetRegistry';
 
 class BaseInputGadget extends BaseGadget {
@@ -11,6 +11,8 @@ class BaseInputGadget extends BaseGadget {
         this.family = "Input";
         this.cssClass = "input";
         this.defaultHeight = 6 * 20;
+        this.isEditable = true;
+        this.outputPorts.push(new Port());
     }
 }
 

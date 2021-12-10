@@ -1,4 +1,4 @@
-import BaseGadget from './BaseGadget'
+import { BaseGadget, Port } from './BaseGadget'
 import gadgetRegistry from './GadgetRegistry';
 
 class BaseWebGadget extends BaseGadget {
@@ -10,6 +10,8 @@ class BaseWebGadget extends BaseGadget {
         super(x, y);
         this.family = "Web";
         this.cssClass = "web";
+        this.inputPorts.push(new Port());
+        this.outputPorts.push(new Port());
     }
 }
 

@@ -43,8 +43,15 @@
 </script>
 
 <div id="workspace" on:dragover={handleDragOver} on:drop={handleDrop}>
-    {#each gadgets as gadget (gadget.id)}
-        <Gadget {gadget} />
+    {#each gadgets as gadget, idx (gadget.id)}
+        <Gadget
+            {gadget}
+            on:delete={() => {
+                gadgets.splice(idx, 1);
+                // Dummy assignment forces reactive update.
+                gadgets = gadgets;
+            }}
+        />
     {/each}
 </div>
 
