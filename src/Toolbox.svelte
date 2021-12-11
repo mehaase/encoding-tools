@@ -31,15 +31,21 @@
 
         // Set the drag image location to be proportional to the location of
         // the click within the gadget handle.
-        let tclient = event.target;
-        let header = dragProxyElement.querySelector("div.header");
+        let handleEl = event.target;
+        let gadgetEl = dragProxyElement.querySelector("div.gadget");
+        let headerEl = dragProxyElement.querySelector("div.header");
         let offsetX = Math.round(
-            (event.offsetX / tclient.clientWidth) * header.clientWidth
+            (event.offsetX / handleEl.clientWidth) * headerEl.clientWidth
         );
         let offsetY = Math.round(
-            (event.offsetY / tclient.clientHeight) * header.clientHeight
+            (event.offsetY / handleEl.clientHeight) * headerEl.clientHeight
         );
-        event.dataTransfer.setDragImage(dragProxyElement, offsetX, offsetY);
+        event.dataTransfer.setDragImage(
+            gadgetEl,
+            offsetX,
+            offsetY + draggedGadget.getDragYOffset()
+        );
+
         let dragData = {
             classId: draggedGadget.getClassId(),
             offsetX: offsetX,
@@ -112,6 +118,7 @@
         height: 2rem;
         padding: 0.3rem 0.8rem;
         background-color: var(--gadget-color);
+        border-radius: 5px;
         font-size: 1rem;
         margin-right: 0.5rem;
         margin-bottom: 0.5rem;

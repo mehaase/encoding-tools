@@ -87,6 +87,12 @@
                         <li><code>?</code> toggle help</li>
                         <li><code>t</code> toggle toolbox</li>
                     </ul>
+                    <p class="built-with">
+                        Built with
+                        <a href="https://svelte.dev/" target="_blank"
+                            >Svelte.js</a
+                        >
+                    </p>
                 </div>
             </div>
         </div>
@@ -105,5 +111,10 @@
     div.modal-body {
         height: 80vh;
         overflow-y: scroll;
+    }
+
+    .built-with {
+        font-weight: bold;
+        text-align: center;
     }
 </style>

@@ -1,5 +1,6 @@
 <script>
     import Gadget from "./Gadget.svelte";
+    import { navbarHeight } from "./Layout";
     import gadgetRegistry from "./gadgets/GadgetRegistry";
     import { HexEncodeGadget } from "./gadgets/ChangeBaseGadgets";
     import { Md5Gadget } from "./gadgets/HashGadgets";
@@ -30,13 +31,12 @@
         let gadgetInfo = JSON.parse(
             event.dataTransfer.getData("application/vnd.encodingtools-gadget")
         );
-
         let newGadget = gadgetRegistry.build(
             gadgetInfo.classId,
-            event.clientX - gadgetInfo.offsetX,
-            event.clientY - gadgetInfo.offsetY - 60
+            event.clientX - gadgetInfo.offsetX + 1,
+            event.clientY - gadgetInfo.offsetY - navbarHeight + 1
         );
-        console.log(newGadget);
+
         gadgets.push(newGadget);
         gadgets = gadgets;
     }

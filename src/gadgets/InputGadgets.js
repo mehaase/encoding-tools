@@ -1,5 +1,6 @@
-import { BaseGadget, Port } from './BaseGadget'
-import gadgetRegistry from './GadgetRegistry';
+import { cellSize } from "../Layout";
+import { BaseGadget, Port } from "./BaseGadget"
+import gadgetRegistry from "./GadgetRegistry";
 
 class BaseInputGadget extends BaseGadget {
     /**
@@ -10,7 +11,7 @@ class BaseInputGadget extends BaseGadget {
         super(x, y);
         this.family = "Input";
         this.cssClass = "input";
-        this.defaultHeight = 6 * 20;
+        this.defaultHeight = 6 * cellSize;
         this.isEditable = true;
         this.outputPorts.push(new Port());
     }

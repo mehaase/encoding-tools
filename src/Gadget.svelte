@@ -1,21 +1,79 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount, tick } from "svelte";
+    import { cellSize } from "./Layout";
+    import { sleep } from "./Sleep";
 
     export let gadget;
 
     const dispatch = createEventDispatcher();
+    let gadgetEl;
+    let moveOffsetX, moveOffsetY;
 
-    let width, height;
+    // Move gadget's absolute location to a mousemove event location (offset by
+    // the relative location of the original mousedown event.).
+    function moveGadget(event) {
+        gadget.x = event.clientX - moveOffsetX;
+        gadget.y = event.clientY - moveOffsetY;
+    }
+
+    // Start a gadget move when the header is left-clicked.
+    function startMove(event) {
+        if (event.button === 0) {
+            moveOffsetX = event.clientX - gadget.x;
+            moveOffsetY = event.clientY - gadget.y;
+            document.addEventListener("mousemove", moveGadget);
+            document.addEventListener("mouseup", endMove);
+        }
+    }
+
+    // End a gadget move when the mouse is up.
+    function endMove() {
+        snapToGrid();
+        document.removeEventListener("mousemove", moveGadget);
+        document.removeEventListener("mouseup", endMove);
+    }
+
+    onMount(() => {
+        // When the gadget is first created, snap it to the grid.
+        snapToGrid();
+    });
+
+    // Snap x and y coordinates to the grid and animate the gadget into the new
+    // position.
+    async function snapToGrid() {
+        let [oldX, oldY] = [gadget.x, gadget.y];
+        gadget.x = Math.round(oldX / cellSize) * cellSize;
+        gadget.y = Math.round(oldY / cellSize) * cellSize;
+        let translateX = oldX - gadget.x;
+        let translateY = oldY - gadget.y;
+        gadgetEl.style.transform = `translate(${translateX}px,${translateY}px)`;
+        let duration = Math.sqrt(translateX ** 2 + translateY ** 2) * 0.01;
+        gadgetEl.style.transition = `transform ${duration}s ease-in`;
+
+        // Not sure why, but await tick() doesn't work. It requires some amount of
+        // sleep.
+        await sleep(10);
+
+        gadgetEl.style.transform = "translate(0px, 0px)";
+        gadgetEl.addEventListener("transitionend", snapToGridTransitionEnd);
+    }
+
+    // This callback disables the transition on the element.
+    function snapToGridTransitionEnd() {
+        gadgetEl.transition = "none";
+        gadgetEl.removeEventListener("transitionend", snapToGridTransitionEnd);
+    }
 </script>
 
 <div
+    bind:this={gadgetEl}
     class="gadget {gadget.cssClass}-gadget"
     style="left: {gadget.x}px;
            top: {gadget.y}px;
-           width: {width ?? gadget.defaultWidth}px;
-           height: {height ?? gadget.defaultHeight}px;"
+           width: {gadget.width}px;
+           height: {gadget.height}px;"
 >
-    <div class="header">
+    <div class="header" on:mousedown={startMove}>
         {gadget.title}
         <i
             class="far fa-times-circle"
@@ -27,12 +85,8 @@
         {/if}
         <i class="far fa-clone" title="Copy" />
     </div>
-    <div class="content">
-        {#if gadget.isEditable}
-            <textarea spellcheck="false" placeholder="Enter text here…" />
-        {:else}
-            <p class="user-select">placeholder</p>
-        {/if}
+    <div class="content" contenteditable={gadget.isEditable}>
+        <div class="value">placeholder</div>
     </div>
     {#each gadget.inputPorts as port, index}
         <div class="input-port port{index}" />
@@ -43,51 +97,75 @@
 </div>
 
 <style>
-    div.gadget {
+    /* Main gadget element */
+    .gadget {
         --border-width: 2px;
+        --border-radius: 5px;
         --port-height: calc(var(--cell-size) * 0.75);
 
         z-index: 1;
         position: absolute;
-        display: inline-block;
-        width: calc(var(--cell-size) * 16);
         background: white;
         border: var(--border-width) solid var(--gadget-color);
+        border-radius: var(--border-radius);
     }
 
-    div.gadget .header {
+    /* Gadget header */
+    .header {
         cursor: move;
         padding-left: 0.5rem;
+        height: 1.5em;
         background-color: var(--gadget-color);
     }
 
-    div.gadget .header i {
+    .header i {
         float: right;
         margin-top: 0.2em;
         margin-right: 0.5em;
         cursor: pointer;
     }
 
-    div.gadget .header i:hover {
-        text-shadow: 0 0 10px var(--light);
+    .header i:hover {
+        text-shadow: 0 0 3px var(--light);
         color: var(--light);
     }
 
-    div.gadget .content {
-        padding: 0.75rem 0.5rem;
+    /* Contents */
+    .content {
+        position: absolute;
+        top: 1.5em;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 4px;
+        background-color: white;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+        overflow-y: auto;
     }
 
-    div.gadget .content span.null {
+    .content[contenteditable="true"]:hover {
+        background-color: #f0f0f0;
+        margin: 2px;
+        border: 2px solid #ccc;
+    }
+
+    .content[contenteditable="true"]:focus {
+        background-color: #f0f0f0;
+        outline: none;
+        margin: 2px;
+        border: 2px solid var(--gadget-color);
+    }
+
+    .content span.null {
         color: #747474;
     }
 
-    div.input-gadget textarea {
-        border: none;
-        resize: none;
-        height: 60px;
-        width: 100%;
+    .content .value {
+        user-select: text;
     }
 
+    /* Ports */
     div.input-port,
     div.output-port {
         position: absolute;
@@ -99,11 +177,36 @@
 
     div.input-port {
         top: calc(-1 * var(--cell-size) * 0.75);
-        border-top-left-radius: 40%;
-        border-top-right-radius: 40%;
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
         background-color: var(--gadget-color);
     }
 
+    div.output-port {
+        bottom: calc(-1 * var(--cell-size) * 0.75);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+        background-color: white;
+    }
+
+    div.port0 {
+        left: calc(var(--cell-size) - var(--border-width));
+    }
+
+    div.port1 {
+        left: calc(var(--cell-size) * 3 - var(--border-width));
+    }
+
+    div.port2 {
+        left: calc(var(--cell-size) * 5 - var(--border-width));
+    }
+
+    div.port3 {
+        left: calc(var(--cell-size) * 7 - var(--border-width));
+    }
+
+    /* Port highlighting */
     div#workspace:not(.highlight-output-ports)
         div.input-port:not(.connected):hover {
         cursor: crosshair;
@@ -111,38 +214,10 @@
         background-color: blue;
     }
 
-    div.output-port {
-        bottom: calc(-1 * var(--cell-size) * 0.75);
-        border-top: none;
-        border-bottom-left-radius: 40%;
-        border-bottom-right-radius: 40%;
-        background-color: white;
-    }
-
     div#workspace:not(.highlight-available-input-ports) div.output-port:hover {
         cursor: crosshair;
         border-color: blue;
         background-color: blue;
-    }
-
-    div.input-port.port0,
-    div.output-port.port0 {
-        left: calc(var(--cell-size) - var(--border-width));
-    }
-
-    div.input-port.port1,
-    div.output-port.port1 {
-        left: calc(var(--cell-size) * 3 - var(--border-width));
-    }
-
-    div.input-port.port2,
-    div.output-port.port2 {
-        left: calc(var(--cell-size) * 5 - var(--border-width));
-    }
-
-    div.input-port.port3,
-    div.output-port.port3 {
-        left: calc(var(--cell-size) * 7 - var(--border-width));
     }
 
     div#workspace.highlight-available-input-ports

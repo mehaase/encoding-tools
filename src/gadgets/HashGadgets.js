@@ -1,5 +1,5 @@
-import { BaseGadget, Port } from './BaseGadget'
-import gadgetRegistry from './GadgetRegistry';
+import { BaseGadget, Port } from "./BaseGadget";
+import gadgetRegistry from "./GadgetRegistry";
 
 class BaseHashGadget extends BaseGadget {
     /**

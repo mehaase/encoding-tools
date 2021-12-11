@@ -1,7 +1,7 @@
 body {
     --cell-size: 20px;
     --drawer-width: 18em;
-    --nav-height: calc(var(--cell-size) * 3);
+    --nav-height: 60px;
     --footer-height: var(--cell-size);
 
     font-family: 'Share Tech', sans-serif;
