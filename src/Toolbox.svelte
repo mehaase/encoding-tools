@@ -74,6 +74,7 @@
                     handleDragStart(event, gadgetRegistration)}
                 on:dragend={(event) => handleDragEnd(event, gadgetRegistration)}
             >
+                <i class="fas fa-sm fa-grip-vertical grip" />
                 {gadgetRegistration.title}
             </div>
         {/each}
@@ -106,13 +107,13 @@
         transform: translateX(var(--drawer-width));
     }
 
-    div#toolbox h2 {
+    h2 {
         font-size: 1.2rem;
         text-align: center;
         margin-top: 1rem;
     }
 
-    div#toolbox .gadget-handle {
+    .gadget-handle {
         display: inline-block;
         cursor: move;
         height: 2rem;
@@ -122,6 +123,12 @@
         font-size: 1rem;
         margin-right: 0.5rem;
         margin-bottom: 0.5rem;
+    }
+
+    i.grip {
+        font-size: 0.75em;
+        position: relative;
+        top: -0.1em;
     }
 
     /* This element must be attached to the DOM and visible, so it is placed just off

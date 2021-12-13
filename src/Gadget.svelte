@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher, onMount, tick } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import { cellSize } from "./Layout";
     import { sleep } from "./Sleep";
 
@@ -44,24 +44,41 @@
         let [oldX, oldY] = [gadget.x, gadget.y];
         gadget.x = Math.round(oldX / cellSize) * cellSize;
         gadget.y = Math.round(oldY / cellSize) * cellSize;
-        let translateX = oldX - gadget.x;
-        let translateY = oldY - gadget.y;
-        gadgetEl.style.transform = `translate(${translateX}px,${translateY}px)`;
-        let duration = Math.sqrt(translateX ** 2 + translateY ** 2) * 0.01;
-        gadgetEl.style.transition = `transform ${duration}s ease-in`;
-
-        // Not sure why, but await tick() doesn't work. It requires some amount of
-        // sleep.
-        await sleep(10);
-
-        gadgetEl.style.transform = "translate(0px, 0px)";
-        gadgetEl.addEventListener("transitionend", snapToGridTransitionEnd);
     }
 
-    // This callback disables the transition on the element.
-    function snapToGridTransitionEnd() {
-        gadgetEl.transition = "none";
-        gadgetEl.removeEventListener("transitionend", snapToGridTransitionEnd);
+    // Start the creation of a new edge when a mousedown fires on a port.
+    function startEdge(event) {
+        if (event.button === 0) {
+            // The event triggers on the highlight element that's on top of the
+            // port, so we need to find the port element from there.
+            const portEl = event.target.parentNode;
+            const portRect = portEl.getBoundingClientRect();
+            const x = (portRect.left + portRect.right) / 2;
+            const y = (portRect.top + portRect.bottom) / 2;
+            const isInput = portEl.classList.contains("input-port");
+            dispatch("startEdge", {
+                isInput: isInput,
+                x: x,
+                y: y,
+            });
+        }
+    }
+
+    function endEdge(event) {
+        if (event.button === 0) {
+            // The event triggers on the highlight element that's on top of the
+            // port, so we need to find the port element from there.
+            const portEl = event.target.parentNode;
+            const portRect = portEl.getBoundingClientRect();
+            const x = (portRect.left + portRect.right) / 2;
+            const y = (portRect.top + portRect.bottom) / 2;
+            const isInput = portEl.classList.contains("input-port");
+            dispatch("endEdge", {
+                isInput: isInput,
+                x: x,
+                y: y,
+            });
+        }
     }
 </script>
 
@@ -74,25 +91,38 @@
            height: {gadget.height}px;"
 >
     <div class="header" on:mousedown={startMove}>
+        <i class="fas fa-grip-vertical grip" />
         {gadget.title}
         <i
-            class="far fa-times-circle"
+            class="far fa-times-circle button"
             title="Delete"
-            on:click={() => dispatch("delete")}
+            on:click={(e) => dispatch("delete")}
         />
         {#if gadget.isEditable}
-            <i class="far fa-clipboard" title="Paste" />
+            <i class="far fa-clipboard button" title="Paste" />
         {/if}
-        <i class="far fa-clone" title="Copy" />
+        <i class="far fa-clone button" title="Copy" />
     </div>
     <div class="content" contenteditable={gadget.isEditable}>
         <div class="value">placeholder</div>
     </div>
     {#each gadget.inputPorts as port, index}
-        <div class="input-port port{index}" />
+        <div
+            class="input-port port{index}"
+            on:mousedown={startEdge}
+            on:mouseup={endEdge}
+        >
+            <div class="highlight" />
+        </div>
     {/each}
     {#each gadget.outputPorts as port, index}
-        <div class="output-port port{index}" />
+        <div
+            class="output-port port{index}"
+            on:mousedown={startEdge}
+            on:mouseup={endEdge}
+        >
+            <div class="highlight" />
+        </div>
     {/each}
 </div>
 
@@ -118,14 +148,20 @@
         background-color: var(--gadget-color);
     }
 
-    .header i {
-        float: right;
+    .header i.grip {
+        font-size: 0.75em;
+        position: relative;
+        top: -0.1em;
+    }
+
+    .header i.button {
         margin-top: 0.2em;
         margin-right: 0.5em;
+        float: right;
         cursor: pointer;
     }
 
-    .header i:hover {
+    .header i.button:hover {
         text-shadow: 0 0 3px var(--light);
         color: var(--light);
     }
@@ -207,17 +243,22 @@
     }
 
     /* Port highlighting */
-    div#workspace:not(.highlight-output-ports)
-        div.input-port:not(.connected):hover {
+    div.input-port:not(.connected),
+    div.output-port {
         cursor: crosshair;
-        border-color: blue;
-        background-color: blue;
     }
 
-    div#workspace:not(.highlight-available-input-ports) div.output-port:hover {
-        cursor: crosshair;
-        border-color: blue;
-        background-color: blue;
+    div.input-port:not(.connected):hover div.highlight,
+    div.output-port:hover div.highlight {
+        position: absolute;
+        border: 2px solid var(--gray-dark);
+        background-color: var(--gray);
+        left: -7px;
+        top: -9px;
+        width: 30px;
+        height: 30px;
+        border-radius: 100%;
+        opacity: 0.2;
     }
 
     div#workspace.highlight-available-input-ports
