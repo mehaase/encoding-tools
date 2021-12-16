@@ -1,4 +1,4 @@
-import { BaseGadget, Port } from "./BaseGadget";
+import { BaseGadget, InputPort, OutputPort } from "./BaseGadget";
 import gadgetRegistry from "./GadgetRegistry";
 
 class BaseHashGadget extends BaseGadget {
@@ -7,11 +7,13 @@ class BaseHashGadget extends BaseGadget {
      * @param {int} y
      */
     constructor(x, y) {
-        super(x, y);
+        super(x, y, [new InputPort()], [new OutputPort()]);
         this.family = "Hash";
         this.cssClass = "hash";
-        this.inputPorts.push(new Port());
-        this.outputPorts.push(new Port());
+    }
+
+    transform() {
+        console.log("txform: hash");
     }
 }
 

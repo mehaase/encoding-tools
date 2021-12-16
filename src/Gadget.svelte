@@ -1,13 +1,28 @@
 <script>
-    import { createEventDispatcher, onMount } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount } from "svelte";
     import { cellSize } from "./Layout";
-    import { sleep } from "./Sleep";
 
     export let gadget;
 
     const dispatch = createEventDispatcher();
-    let gadgetEl;
     let moveOffsetX, moveOffsetY;
+    let display = null;
+    let gadgetUnsub = null;
+
+    onMount(() => {
+        // When the gadget is first created, snap it to the grid.
+        snapToGrid();
+        gadgetUnsub = gadget.display.subscribe((value) => {
+            display = value;
+        });
+    });
+
+    onDestroy(() => {
+        // Unsubscribe gadget subscription.
+        if (gadgetUnsub !== null) {
+            gadgetUnsub();
+        }
+    });
 
     // Move gadget's absolute location to a mousemove event location (offset by
     // the relative location of the original mousedown event.).
@@ -33,21 +48,16 @@
         document.removeEventListener("mouseup", endMove);
     }
 
-    onMount(() => {
-        // When the gadget is first created, snap it to the grid.
-        snapToGrid();
-    });
-
     // Snap x and y coordinates to the grid and animate the gadget into the new
     // position.
-    async function snapToGrid() {
+    function snapToGrid() {
         let [oldX, oldY] = [gadget.x, gadget.y];
         gadget.x = Math.round(oldX / cellSize) * cellSize;
         gadget.y = Math.round(oldY / cellSize) * cellSize;
     }
 
     // Start the creation of a new edge when a mousedown fires on a port.
-    function startEdge(event) {
+    function startEdge(event, portIndex) {
         if (event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
@@ -58,13 +68,15 @@
             const isInput = portEl.classList.contains("input-port");
             dispatch("startEdge", {
                 isInput: isInput,
+                gadgetId: gadget.id,
+                portIndex: portIndex,
                 x: x,
                 y: y,
             });
         }
     }
 
-    function endEdge(event) {
+    function endEdge(event, portIndex) {
         if (event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
@@ -75,6 +87,8 @@
             const isInput = portEl.classList.contains("input-port");
             dispatch("endEdge", {
                 isInput: isInput,
+                gadgetId: gadget.id,
+                portIndex: portIndex,
                 x: x,
                 y: y,
             });
@@ -83,7 +97,6 @@
 </script>
 
 <div
-    bind:this={gadgetEl}
     class="gadget {gadget.cssClass}-gadget"
     style="left: {gadget.x}px;
            top: {gadget.y}px;
@@ -103,14 +116,34 @@
         {/if}
         <i class="far fa-clone button" title="Copy" />
     </div>
-    <div class="content" contenteditable={gadget.isEditable}>
-        <div class="value">placeholder</div>
-    </div>
+    {#if gadget.editableValue === null}
+        <div class="content">
+            {#if display === null || display.isNull()}
+                <div class="null">
+                    <i class="fas fa-exclamation-triangle" />
+                    NULL
+                </div>
+            {:else if display.hasError()}
+                <div class="error">
+                    <i class="fas fa-exclamation-triangle" />
+                    {display.error}
+                </div>
+            {:else}
+                <div class="value">{display.text}</div>
+            {/if}
+        </div>
+    {:else}
+        <div
+            class="content"
+            contenteditable="true"
+            on:keyup={(e) => gadget.editableValue.set(e.target.textContent)}
+        />
+    {/if}
     {#each gadget.inputPorts as port, index}
         <div
             class="input-port port{index}"
-            on:mousedown={startEdge}
-            on:mouseup={endEdge}
+            on:mousedown={(event) => startEdge(event, index)}
+            on:mouseup={(event) => endEdge(event, index)}
         >
             <div class="highlight" />
         </div>
@@ -118,8 +151,8 @@
     {#each gadget.outputPorts as port, index}
         <div
             class="output-port port{index}"
-            on:mousedown={startEdge}
-            on:mouseup={endEdge}
+            on:mousedown={(event) => startEdge(event, index)}
+            on:mouseup={(event) => endEdge(event, index)}
         >
             <div class="highlight" />
         </div>
@@ -132,10 +165,11 @@
         --border-width: 2px;
         --border-radius: 5px;
         --port-height: calc(var(--cell-size) * 0.75);
+        --background-color: rgba(255, 255, 255, 1);
 
         z-index: 1;
         position: absolute;
-        background: white;
+        background-color: var(--background-color);
         border: var(--border-width) solid var(--gadget-color);
         border-radius: var(--border-radius);
     }
@@ -174,7 +208,6 @@
         right: 0;
         bottom: 0;
         margin: 4px;
-        background-color: white;
         border-bottom-left-radius: var(--border-radius);
         border-bottom-right-radius: var(--border-radius);
         overflow-y: auto;
@@ -193,8 +226,12 @@
         border: 2px solid var(--gadget-color);
     }
 
-    .content span.null {
-        color: #747474;
+    .content .null {
+        color: var(--gray);
+    }
+
+    .content .error {
+        color: var(--red);
     }
 
     .content .value {
@@ -223,7 +260,7 @@
         border-top: none;
         border-bottom-left-radius: var(--border-radius);
         border-bottom-right-radius: var(--border-radius);
-        background-color: white;
+        background-color: var(--background-color);
     }
 
     div.port0 {
@@ -270,5 +307,18 @@
     div#workspace.highlight-output-ports div.output-port {
         border-color: lightblue;
         background-color: lightblue;
+    }
+
+    /* Force display of scroll bars on MacOS, which otherwise hides scrollbars when not
+    actively scrolling. */
+    ::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
     }
 </style>

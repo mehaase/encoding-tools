@@ -3,36 +3,68 @@
     import Gadget from "./Gadget.svelte";
     import { navbarHeight } from "./Layout";
     import gadgetRegistry from "./gadgets/GadgetRegistry";
-    import { HexEncodeGadget } from "./gadgets/ChangeBaseGadgets";
+    import {
+        HexEncodeGadget,
+        HexDecodeGadget,
+    } from "./gadgets/ChangeBaseGadgets";
     import { Md5Gadget } from "./gadgets/HashGadgets";
     import { InputGadget } from "./gadgets/InputGadgets";
     import { UrlEncodeGadget } from "./gadgets/WebGadgets";
 
+    let nextEdgeId = 0;
+
     class EdgeModel {
-        constructor(x1, y1, x2, y2) {
-            this.x1 = x1;
-            this.y1 = y1;
-            this.x2 = x2;
-            this.y2 = y2;
+        constructor(x, y) {
+            this.id = nextEdgeId++;
+            this.coords = { x1: x, y1: y, x2: x, y2: y };
+            this.sourceGadgetId = null;
+            this.sourcePortIndex = null;
+            this.destGadgetId = null;
+            this.destPortIndex = null;
+        }
+
+        setSource(gadgetId, portIndex) {
+            this.sourceGadgetId = gadgetId;
+            this.sourcePortIndex = portIndex;
+        }
+
+        setDest(gadgetId, portIndex) {
+            this.destGadgetId = gadgetId;
+            this.destPortIndex = portIndex;
         }
 
         moveEndTo(x, y) {
-            this.x2 = x;
-            this.y2 = y;
+            this.coords.x2 = x;
+            this.coords.y2 = y;
+        }
+
+        toString() {
+            return `Edge(${this.sourceGadgetId}:${this.sourcePortIndex} -> ${this.destGadgetId}:${this.destPortIndex})`;
         }
     }
 
     let newEdge = null;
-    let edges = [
-        // new EdgeModel(50, 110, 70, 150),
-        // new EdgeModel(70, 250, 90, 290),
-    ];
-    let gadgets = [
-        new InputGadget(1 * 20, 1 * 20),
-        new HexEncodeGadget(2 * 20, 8 * 20),
-        new Md5Gadget(3 * 20, 15 * 20),
-        new UrlEncodeGadget(4 * 20, 22 * 20),
-    ];
+    let edge1 = new EdgeModel(50, 100);
+    edge1.moveEndTo(70, 150);
+    let edge2 = new EdgeModel(70, 250);
+    edge2.moveEndTo(90, 290);
+    let edges = [edge1, edge2];
+    let ig = new InputGadget(1 * 20, 1 * 20);
+    let heg = new HexEncodeGadget(2 * 20, 8 * 20);
+    let hdg = new HexDecodeGadget(3 * 20, 15 * 20);
+    let ueg = new UrlEncodeGadget(4 * 20, 22 * 20);
+    let gadgets = [ig, heg, hdg, ueg];
+    heg.inputPorts[0].connectTo(ig.outputPorts[0]);
+    hdg.inputPorts[0].connectTo(heg.outputPorts[0]);
+    let gadgetsById = {};
+    for (let gadget of gadgets) {
+        gadgetsById[gadget.id] = gadget;
+    }
+    // Graph is just nodes. Multiple roots. Each node is a dict that contains mapping of
+    // sub nodes to their respective subtrees (or null if leaf node.)
+    // let graph = [
+    //   nodeid: {nodeid: null, nodeid: {nodeid: null}, nodeid: null}
+    // ];
 
     // Handle drag-over events in the workspace.
     //
@@ -67,9 +99,10 @@
         if (detail.isInput) {
             throw new Error("not implemented");
         } else {
-            let { portIndex, x, y } = detail;
+            let { gadgetId, portIndex, x, y } = detail;
             y -= navbarHeight;
-            newEdge = new EdgeModel(x, y, x, y);
+            newEdge = new EdgeModel(x, y);
+            newEdge.setSource(gadgetId, portIndex);
             document.addEventListener("mousemove", handleMoveEdge);
             document.addEventListener("mouseup", handleEndEdge);
         }
@@ -83,7 +116,6 @@
 
     // On mouseup, destroy the current edge.
     function handleEndEdge(event) {
-        console.log("end edge");
         newEdge = null;
         document.removeEventListener("mousemove", handleMoveEdge);
         document.removeEventListener("mouseup", handleEndEdge);
@@ -94,9 +126,9 @@
     // This always fires before handleEndEdge, so it's safe to reference
     // newEdge.
     function handleConnectEdge(event) {
-        console.log("connect edge");
-        let detail = event.detail;
-        newEdge.moveEndTo(detail.x, detail.y - navbarHeight);
+        let { gadgetId, portIndex, x, y } = event.detail;
+        newEdge.moveEndTo(x, y - navbarHeight);
+        newEdge.setDest(gadgetId, portIndex);
         edges.push(newEdge);
         edges = edges;
     }
@@ -115,11 +147,11 @@
             on:endEdge={handleConnectEdge}
         />
     {/each}
-    {#each edges as edge, idx}
-        <Edge {...edge} />
+    {#each edges as edge (edge.id)}
+        <Edge {...edge.coords} />
     {/each}
     {#if newEdge !== null}
-        <Edge {...newEdge} />
+        <Edge {...newEdge.coords} />
     {/if}
 </div>
 

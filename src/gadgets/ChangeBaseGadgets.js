@@ -1,5 +1,6 @@
-import { BaseGadget, Port } from "./BaseGadget";
-import gadgetRegistry from "./GadgetRegistry";
+import { Buffer } from "buffer";
+import { BaseGadget, InputPort, OutputPort, DisplayState } from "./BaseGadget.js";
+import gadgetRegistry from "./GadgetRegistry.js";
 
 /**
  * Shared behavior for all change-of base gadgets.
@@ -10,11 +11,13 @@ class BaseChangeBaseGadget extends BaseGadget {
      * @param {int} y
      */
     constructor(x, y) {
-        super(x, y);
+        super(x, y, [new InputPort()], [new OutputPort()]);
         this.family = "Change Base";
         this.cssClass = "change-base";
-        this.inputPorts.push(new Port());
-        this.outputPorts.push(new Port());
+    }
+
+    transform() {
+        console.log("txform: change base");
     }
 }
 
@@ -30,6 +33,20 @@ export class HexEncodeGadget extends BaseChangeBaseGadget {
         super(x, y);
         this.title = "Hex Encode";
     }
+
+    transform() {
+        let in1 = this.inputPorts[0].value;
+
+        if (in1.length > 0) {
+            let display = in1.toString("hex");
+            let data = Buffer.from(display, "utf8");
+            this.display.set(DisplayState.display(display));
+            this.outputPorts[0].set(data);
+        } else {
+            this.display.set(DisplayState.null());
+            this.outputPorts[0].set(null);
+        }
+    }
 }
 gadgetRegistry.register((...args) => new HexEncodeGadget(...args));
 
@@ -44,6 +61,21 @@ export class HexDecodeGadget extends BaseChangeBaseGadget {
     constructor(x, y) {
         super(x, y);
         this.title = "Hex Decode";
+    }
+
+    transform() {
+        let in1 = this.inputPorts[0].value;
+
+        if (in1.length > 0) {
+            let hexString = in1.toString("ascii");
+            let data = Buffer.from(hexString, "hex");
+            let display = data.toString("utf8");
+            this.display.set(DisplayState.display(display));
+            this.outputPorts[0].set(data);
+        } else {
+            this.display.set(DisplayState.null());
+            this.outputPorts[0].set(null);
+        }
     }
 }
 gadgetRegistry.register((...args) => new HexDecodeGadget(...args));
