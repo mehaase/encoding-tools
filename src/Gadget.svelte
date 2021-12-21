@@ -57,7 +57,7 @@
     }
 
     // Start the creation of a new edge when a mousedown fires on a port.
-    function startEdge(event, portIndex) {
+    function startEdge(event, port) {
         if (event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
@@ -68,15 +68,15 @@
             const isInput = portEl.classList.contains("input-port");
             dispatch("startEdge", {
                 isInput: isInput,
-                gadgetId: gadget.id,
-                portIndex: portIndex,
+                gadgetId: gadget.getId(),
+                port: port,
                 x: x,
                 y: y,
             });
         }
     }
 
-    function endEdge(event, portIndex) {
+    function endEdge(event, port) {
         if (event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
@@ -87,8 +87,8 @@
             const isInput = portEl.classList.contains("input-port");
             dispatch("endEdge", {
                 isInput: isInput,
-                gadgetId: gadget.id,
-                portIndex: portIndex,
+                gadgetId: gadget.getId(),
+                port: port,
                 x: x,
                 y: y,
             });
@@ -142,8 +142,8 @@
     {#each gadget.inputPorts as port, index}
         <div
             class="input-port port{index}"
-            on:mousedown={(event) => startEdge(event, index)}
-            on:mouseup={(event) => endEdge(event, index)}
+            on:mousedown={(event) => startEdge(event, port)}
+            on:mouseup={(event) => endEdge(event, port)}
         >
             <div class="highlight" />
         </div>
@@ -151,8 +151,8 @@
     {#each gadget.outputPorts as port, index}
         <div
             class="output-port port{index}"
-            on:mousedown={(event) => startEdge(event, index)}
-            on:mouseup={(event) => endEdge(event, index)}
+            on:mousedown={(event) => startEdge(event, port)}
+            on:mouseup={(event) => endEdge(event, port)}
         >
             <div class="highlight" />
         </div>

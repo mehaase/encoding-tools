@@ -52,6 +52,10 @@ export class BaseGadget {
         return this.inputPorts.length > 0 ? 15 : 0;
     }
 
+    getId() {
+        return this.getClassId() + "#" + this.id;
+    }
+
     /**
      * Return a unique ID for the gadget class.
      */
@@ -104,22 +108,40 @@ export class DisplayState {
         this.error = error;
     }
 
+    /**
+     * @returns A null display state (no text or error)
+     */
     static null() {
         return new DisplayState(null, null);
     }
 
+    /**
+     * @param {string} text The text to display
+     * @returns A display state containing text
+     */
     static display(text) {
         return new DisplayState(text, null);
     }
 
+    /**
+     *
+     * @param {string} error The error message to display
+     * @returns An error state
+     */
     static error(error) {
         return new DisplayState(null, error);
     }
 
+    /**
+     * @returns true if this is an error state
+     */
     hasError() {
         return this.error !== null;
     }
 
+    /**
+     * @returns true if this is a null state
+     */
     isNull() {
         return this.text === null;
     }
@@ -166,11 +188,21 @@ export class InputPort {
     }
 }
 
+/**
+ * An output port publishes output data to any ports connected to it.
+ */
 export class OutputPort {
+    /**
+     * Constructor
+     */
     constructor() {
         this.store = writable(Buffer.from([]));
     }
 
+    /**
+     * Publish data on this port.
+     * @param {Buffer} data
+     */
     set(data) {
         if (data === null) {
             data = Buffer.from([]);
