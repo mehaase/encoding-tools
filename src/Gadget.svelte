@@ -118,15 +118,15 @@
     </div>
     {#if gadget.editableValue === null}
         <div class="content">
-            {#if display === null || display.isNull()}
-                <div class="null">
-                    <i class="fas fa-exclamation-triangle" />
-                    NULL
-                </div>
-            {:else if display.hasError()}
+            {#if display !== null && display.hasError()}
                 <div class="error">
                     <i class="fas fa-exclamation-triangle" />
                     {display.error}
+                </div>
+            {:else if display === null || display.isNull()}
+                <div class="null">
+                    <i class="fas fa-exclamation-triangle" />
+                    NULL
                 </div>
             {:else}
                 <div class="value">{display.text}</div>
@@ -314,6 +314,7 @@
     ::-webkit-scrollbar {
         -webkit-appearance: none;
         width: 7px;
+        height: 7px;
     }
 
     ::-webkit-scrollbar-thumb {

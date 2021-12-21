@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { BaseGadget, InputPort, OutputPort, DisplayState } from "./BaseGadget.js";
+import { BaseGadget, DisplayState, InputPort, OutputPort } from "./BaseGadget.js";
 import gadgetRegistry from "./GadgetRegistry.js";
 
 /**
@@ -14,10 +14,6 @@ class BaseChangeBaseGadget extends BaseGadget {
         super(x, y, [new InputPort()], [new OutputPort()]);
         this.family = "Change Base";
         this.cssClass = "change-base";
-    }
-
-    transform() {
-        console.log("txform: change base");
     }
 }
 
@@ -34,11 +30,14 @@ export class HexEncodeGadget extends BaseChangeBaseGadget {
         this.title = "Hex Encode";
     }
 
+    /**
+     * Override BaseGadget#transform() to hex encode inputs.
+     */
     transform() {
-        let in1 = this.inputPorts[0].value;
+        const in0 = this.inputPorts[0].value;
 
-        if (in1.length > 0) {
-            let display = in1.toString("hex");
+        if (in0.length > 0) {
+            let display = in0.toString("hex");
             let data = Buffer.from(display, "utf8");
             this.display.set(DisplayState.display(display));
             this.outputPorts[0].set(data);
@@ -63,11 +62,14 @@ export class HexDecodeGadget extends BaseChangeBaseGadget {
         this.title = "Hex Decode";
     }
 
+    /**
+     * Override BaseGadget#transform() to hex decode inputs.
+     */
     transform() {
-        let in1 = this.inputPorts[0].value;
+        const in0 = this.inputPorts[0].value;
 
-        if (in1.length > 0) {
-            let hexString = in1.toString("ascii");
+        if (in0.length > 0) {
+            let hexString = in0.toString("ascii");
             let data = Buffer.from(hexString, "hex");
             let display = data.toString("utf8");
             this.display.set(DisplayState.display(display));
@@ -92,6 +94,23 @@ export class Base64EncodeGadget extends BaseChangeBaseGadget {
         super(x, y);
         this.title = "Base64 Encode";
     }
+
+    /**
+     * Override BaseGadget#transform() to base64 encode inputs.
+     */
+    transform() {
+        const in0 = this.inputPorts[0].value;
+
+        if (in0.length > 0) {
+            let display = in0.toString("base64");
+            let data = Buffer.from(display, "utf8");
+            this.display.set(DisplayState.display(display));
+            this.outputPorts[0].set(data);
+        } else {
+            this.display.set(DisplayState.null());
+            this.outputPorts[0].set(null);
+        }
+    }
 }
 gadgetRegistry.register((...args) => new Base64EncodeGadget(...args));
 
@@ -106,6 +125,30 @@ export class Base64DecodeGadget extends BaseChangeBaseGadget {
     constructor(x, y) {
         super(x, y);
         this.title = "Base64 Decode";
+    }
+
+    /**
+     * Override BaseGadget#transform() to base64 decode inputs.
+     */
+    transform() {
+        const in0 = this.inputPorts[0].value;
+
+        // The Buffer implementation pads out inputs as neccessary, so we don't need
+        // validate base64 padding ourselves.
+        if (in0.length > 0) {
+            try {
+                let base64String = in0.toString("ascii");
+                let data = Buffer.from(base64String, "base64");
+                let display = data.toString("utf8");
+                this.display.set(DisplayState.display(display));
+                this.outputPorts[0].set(data);
+            } catch (e) {
+                console.log("caught", e);
+            }
+        } else {
+            this.display.set(DisplayState.null());
+            this.outputPorts[0].set(Buffer.from);
+        }
     }
 }
 gadgetRegistry.register((...args) => new Base64DecodeGadget(...args));

@@ -1,8 +1,8 @@
 import { Buffer } from "buffer";
 import { writable } from "svelte/store";
-import { cellSize } from "../Layout";
-import { BaseGadget, OutputPort, DisplayState } from "./BaseGadget"
-import gadgetRegistry from "./GadgetRegistry";
+import { cellSize } from "../Layout.js";
+import { BaseGadget, OutputPort, DisplayState } from "./BaseGadget.js"
+import gadgetRegistry from "./GadgetRegistry.js";
 
 class BaseInputGadget extends BaseGadget {
     /**

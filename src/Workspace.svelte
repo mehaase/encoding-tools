@@ -3,13 +3,8 @@
     import Gadget from "./Gadget.svelte";
     import { navbarHeight } from "./Layout";
     import gadgetRegistry from "./gadgets/GadgetRegistry";
-    import {
-        HexEncodeGadget,
-        HexDecodeGadget,
-    } from "./gadgets/ChangeBaseGadgets";
-    import { Md5Gadget } from "./gadgets/HashGadgets";
     import { InputGadget } from "./gadgets/InputGadgets";
-    import { UrlEncodeGadget } from "./gadgets/WebGadgets";
+    import { Md5Gadget, Sha1Gadget, Sha2Gadget } from "./gadgets/HashGadgets";
 
     let nextEdgeId = 0;
 
@@ -50,12 +45,11 @@
     edge2.moveEndTo(90, 290);
     let edges = [edge1, edge2];
     let ig = new InputGadget(1 * 20, 1 * 20);
-    let heg = new HexEncodeGadget(2 * 20, 8 * 20);
-    let hdg = new HexDecodeGadget(3 * 20, 15 * 20);
-    let ueg = new UrlEncodeGadget(4 * 20, 22 * 20);
-    let gadgets = [ig, heg, hdg, ueg];
+    let heg = new Md5Gadget(2 * 20, 8 * 20);
+    let hdg = new Sha2Gadget(3 * 20, 15 * 20);
+    let gadgets = [ig, heg, hdg];
     heg.inputPorts[0].connectTo(ig.outputPorts[0]);
-    hdg.inputPorts[0].connectTo(heg.outputPorts[0]);
+    hdg.inputPorts[0].connectTo(ig.outputPorts[0]);
     let gadgetsById = {};
     for (let gadget of gadgets) {
         gadgetsById[gadget.id] = gadget;
