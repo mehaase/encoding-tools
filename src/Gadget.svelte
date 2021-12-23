@@ -65,9 +65,7 @@
             const portRect = portEl.getBoundingClientRect();
             const x = (portRect.left + portRect.right) / 2;
             const y = (portRect.top + portRect.bottom) / 2;
-            const isInput = portEl.classList.contains("input-port");
             dispatch("startEdge", {
-                isInput: isInput,
                 gadgetId: gadget.getId(),
                 port: port,
                 x: x,
@@ -84,9 +82,7 @@
             const portRect = portEl.getBoundingClientRect();
             const x = (portRect.left + portRect.right) / 2;
             const y = (portRect.top + portRect.bottom) / 2;
-            const isInput = portEl.classList.contains("input-port");
             dispatch("endEdge", {
-                isInput: isInput,
                 gadgetId: gadget.getId(),
                 port: port,
                 x: x,
@@ -133,10 +129,12 @@
             {/if}
         </div>
     {:else}
-        <div
+        <textarea
             class="content"
-            contenteditable="true"
-            on:keyup={(e) => gadget.editableValue.set(e.target.textContent)}
+            style="width: {gadget.width - 12}px; height: {gadget.height -
+                36}px;"
+            placeholder="Enter input here…"
+            on:input={(e) => gadget.editableValue.set(e.target.value)}
         />
     {/if}
     {#each gadget.inputPorts as port, index}
@@ -213,16 +211,17 @@
         overflow-y: auto;
     }
 
-    .content[contenteditable="true"]:hover {
+    textarea {
         background-color: #f0f0f0;
-        margin: 2px;
         border: 2px solid #ccc;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+        resize: none;
+        outline: none;
     }
 
-    .content[contenteditable="true"]:focus {
-        background-color: #f0f0f0;
-        outline: none;
-        margin: 2px;
+    textarea:hover,
+    textarea:focus {
         border: 2px solid var(--gadget-color);
     }
 

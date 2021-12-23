@@ -5,12 +5,13 @@
     import { navbarHeight } from "./Layout.js";
     import gadgetRegistry from "./gadgets/GadgetRegistry.js";
     import { InputPort, OutputPort } from "./gadgets/BaseGadget.js";
+
+    // All gadget modules are imported just to trigger the side effect of adding them
+    // to the registry.
+    import {} from "./gadgets/ChangeBaseGadgets.js";
+    import {} from "./gadgets/HashGadgets.js";
     import { InputGadget } from "./gadgets/InputGadgets.js";
-    import {
-        Md5Gadget,
-        Sha1Gadget,
-        Sha2Gadget,
-    } from "./gadgets/HashGadgets.js";
+    import {} from "./gadgets/WebGadgets.js";
 
     let nextEdgeId = 0;
     let graph = new Graph();
@@ -77,15 +78,20 @@
             this.coords.x2 = x;
             this.coords.y2 = y;
         }
+
+        /**
+         * Disconnect source port from target port.
+         */
+        disconnect() {
+            graph.removeEdge(this.sourceGadgetId, this.destGadgetId);
+            this.destPort.disconnect();
+        }
     }
 
     let newEdge = null;
     let edges = [];
-    let g1 = new InputGadget(1 * 20, 1 * 20);
-    let g2 = new Md5Gadget(2 * 20, 8 * 20);
-    let g3 = new Sha1Gadget(3 * 20, 15 * 20);
-    let g4 = new Sha2Gadget(4 * 20, 22 * 20);
-    let gadgets = [g1, g2, g3, g4];
+    let defaultInput = new InputGadget(1 * 20, 1 * 20);
+    let gadgets = [defaultInput];
 
     // Handle drag-over events in the workspace.
     //
@@ -116,16 +122,11 @@
 
     // Handle new edge creation.
     function handleStartEdge(event) {
-        let detail = event.detail;
-        if (detail.isInput) {
-            throw new Error("not implemented");
-        } else {
-            let { gadgetId, port, x, y } = detail;
-            y -= navbarHeight;
-            newEdge = new EdgeModel(x, y, gadgetId, port);
-            document.addEventListener("mousemove", handleMoveEdge);
-            document.addEventListener("mouseup", handleEndEdge);
-        }
+        let { gadgetId, port, x, y } = event.detail;
+        y -= navbarHeight;
+        newEdge = new EdgeModel(x, y, gadgetId, port);
+        document.addEventListener("mousemove", handleMoveEdge);
+        document.addEventListener("mouseup", handleEndEdge);
     }
 
     // On mousemove, move the edge to the event location.
@@ -156,6 +157,27 @@
             alert(e);
         }
     }
+
+    function removeGadget(gadgetIdx) {
+        let [gadget] = gadgets.splice(gadgetIdx, 1);
+        let gadgetId = gadget.getId();
+        let newEdges = [];
+
+        for (let edge of edges) {
+            if (
+                edge.sourceGadgetId == gadgetId ||
+                edge.destGadgetId == gadgetId
+            ) {
+                edge.disconnect();
+            } else {
+                newEdges.push(edge);
+            }
+        }
+
+        edges = newEdges;
+        // Dummy assignment to force reactive update.
+        gadgets = gadgets;
+    }
 </script>
 
 <div id="workspace" on:dragover={handleDragOver} on:drop={handleDrop}>
@@ -163,9 +185,7 @@
         <Gadget
             {gadget}
             on:delete={() => {
-                gadgets.splice(idx, 1);
-                // Dummy assignment to force reactive update.
-                gadgets = gadgets;
+                removeGadget(idx);
             }}
             on:startEdge={handleStartEdge}
             on:endEdge={handleConnectEdge}

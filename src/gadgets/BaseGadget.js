@@ -52,6 +52,10 @@ export class BaseGadget {
         return this.inputPorts.length > 0 ? 15 : 0;
     }
 
+    /**
+     * Generate a unique ID that is a combination of the class ID and a unique sequence.
+     * @returns Strin
+     */
     getId() {
         return this.getClassId() + "#" + this.id;
     }
