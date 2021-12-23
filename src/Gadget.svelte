@@ -1,5 +1,5 @@
 <script>
-    import { createEventDispatcher, onDestroy, onMount } from "svelte";
+    import { createEventDispatcher, onDestroy, onMount, tick } from "svelte";
     import { cellSize } from "./Layout";
 
     export let gadget;
@@ -8,6 +8,7 @@
     let moveOffsetX, moveOffsetY;
     let display = null;
     let gadgetUnsub = null;
+    let gadgetEl;
 
     onMount(() => {
         // When the gadget is first created, snap it to the grid.
@@ -24,11 +25,50 @@
         }
     });
 
+    /**
+     * Compute centroid of a rect.
+     * @param rect
+     * @returns {x, y}
+     */
+    function centroid(rect) {
+        return {
+            x: (rect.left + rect.right) / 2,
+            y: (rect.top + rect.bottom) / 2,
+        };
+    }
+
     // Move gadget's absolute location to a mousemove event location (offset by
-    // the relative location of the original mousedown event.).
-    function moveGadget(event) {
+    // the relative location of the original mousedown event).
+    async function moveGadget(event) {
         gadget.x = event.clientX - moveOffsetX;
         gadget.y = event.clientY - moveOffsetY;
+        await tick();
+        dispatchMovedEvent();
+    }
+
+    // Whenever the gadget is moved (either because the user moved it, or because it
+    // snapped to grid after a move completed), dispatch an event telling the workspace
+    // the coordinates of all of its nodes.
+    function dispatchMovedEvent() {
+        let inputPorts = {};
+        let inputPortEls = gadgetEl.querySelectorAll(".input-port");
+        for (let i = 0; i < gadget.inputPorts.length; i++) {
+            const portRect = inputPortEls[i].getBoundingClientRect();
+            inputPorts[i] = centroid(portRect);
+        }
+
+        let outputPorts = {};
+        let outputPortEls = gadgetEl.querySelectorAll(".output-port");
+        for (let i = 0; i < gadget.outputPorts.length; i++) {
+            const portRect = outputPortEls[i].getBoundingClientRect();
+            outputPorts[i] = centroid(portRect);
+        }
+
+        dispatch("moved", {
+            gadgetId: gadget.getId(),
+            inputPorts: inputPorts,
+            outputPorts: outputPorts,
+        });
     }
 
     // Start a gadget move when the header is left-clicked.
@@ -50,31 +90,44 @@
 
     // Snap x and y coordinates to the grid and animate the gadget into the new
     // position.
-    function snapToGrid() {
+    async function snapToGrid() {
         let [oldX, oldY] = [gadget.x, gadget.y];
         gadget.x = Math.round(oldX / cellSize) * cellSize;
         gadget.y = Math.round(oldY / cellSize) * cellSize;
+        await tick();
+        dispatchMovedEvent();
     }
 
-    // Start the creation of a new edge when a mousedown fires on a port.
-    function startEdge(event, port) {
+    /**
+     * Start the creation of a new edge when a mousedown fires on a port.
+     * @param event
+     * @param port
+     * @param portIndex
+     */
+    function startEdge(event, port, portIndex) {
         if (event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
             const portEl = event.target.parentNode;
             const portRect = portEl.getBoundingClientRect();
-            const x = (portRect.left + portRect.right) / 2;
-            const y = (portRect.top + portRect.bottom) / 2;
+            let c = centroid(portRect);
             dispatch("startEdge", {
                 gadgetId: gadget.getId(),
                 port: port,
-                x: x,
-                y: y,
+                portIndex: portIndex,
+                x: c.x,
+                y: c.y,
             });
         }
     }
 
-    function endEdge(event, port) {
+    /**
+     * End the creation of a new edge when mouseup fires on a port.
+     * @param event
+     * @param port
+     * @param portIndex
+     */
+    function endEdge(event, port, portIndex) {
         if (event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
@@ -85,6 +138,7 @@
             dispatch("endEdge", {
                 gadgetId: gadget.getId(),
                 port: port,
+                portIndex: portIndex,
                 x: x,
                 y: y,
             });
@@ -93,6 +147,7 @@
 </script>
 
 <div
+    bind:this={gadgetEl}
     class="gadget {gadget.cssClass}-gadget"
     style="left: {gadget.x}px;
            top: {gadget.y}px;
@@ -140,8 +195,8 @@
     {#each gadget.inputPorts as port, index}
         <div
             class="input-port port{index}"
-            on:mousedown={(event) => startEdge(event, port)}
-            on:mouseup={(event) => endEdge(event, port)}
+            on:mousedown={(event) => startEdge(event, port, index)}
+            on:mouseup={(event) => endEdge(event, port, index)}
         >
             <div class="highlight" />
         </div>
@@ -149,8 +204,8 @@
     {#each gadget.outputPorts as port, index}
         <div
             class="output-port port{index}"
-            on:mousedown={(event) => startEdge(event, port)}
-            on:mouseup={(event) => endEdge(event, port)}
+            on:mousedown={(event) => startEdge(event, port, index)}
+            on:mouseup={(event) => endEdge(event, port, index)}
         >
             <div class="highlight" />
         </div>

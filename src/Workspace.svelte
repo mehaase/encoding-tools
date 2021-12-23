@@ -27,31 +27,37 @@
          * @param x X coordinate for edge's starting location
          * @param y Y coordinate for edge's starting location
          */
-        constructor(x, y, sourceGadgetId, sourcePort) {
+        constructor(x, y, sourceGadgetId, sourcePort, sourcePortIndex) {
             this.id = nextEdgeId++;
             this.coords = { x1: x, y1: y, x2: x, y2: y };
             this.sourceGadgetId = sourceGadgetId;
             this.sourcePort = sourcePort;
+            this.sourcePortIndex = sourcePortIndex;
             this.destGadgetId = null;
             this.destPort = null;
+            this.destPortIndex = null;
         }
 
         /**
          * Set the edge's destination, i.e. the gadget/port that it is connected to.
          * @param gadgetId
          * @param port
+         * @param portIndex
          */
-        setDest(gadgetId, port) {
+        setDest(gadgetId, port, portIndex) {
             // Make sure that the source port is always an output port, and destination
             // is always an input.
             if (this.sourcePort instanceof InputPort) {
                 this.destGadgetId = this.sourceGadgetId;
                 this.destPort = this.sourcePort;
+                this.destPortIndex = this.sourcePortIndex;
                 this.sourceGadgetId = gadgetId;
                 this.sourcePort = port;
+                this.sourcePortIndex = portIndex;
             } else {
                 this.destGadgetId = gadgetId;
                 this.destPort = port;
+                this.destPortIndex = portIndex;
             }
 
             if (
@@ -69,8 +75,20 @@
         }
 
         /**
+         * Move the endpoint to the specified coordinates. This method is used when a
+         * gadget is being moved around.
+         * @param x
+         * @param y
+         */
+        moveStartTo(x, y) {
+            this.coords.x1 = x;
+            this.coords.y1 = y;
+        }
+
+        /**
          * Move the endpoint to the specified coordinates. This method is used while the
-         * user is dragging out a new edge to make the edge follow the cursor.
+         * user is dragging out a new edge to make the edge follow the cursor, or when a
+         * gadget is being moved around.
          * @param x
          * @param y
          */
@@ -122,9 +140,9 @@
 
     // Handle new edge creation.
     function handleStartEdge(event) {
-        let { gadgetId, port, x, y } = event.detail;
+        let { gadgetId, port, portIndex, x, y } = event.detail;
         y -= navbarHeight;
-        newEdge = new EdgeModel(x, y, gadgetId, port);
+        newEdge = new EdgeModel(x, y, gadgetId, port, portIndex);
         document.addEventListener("mousemove", handleMoveEdge);
         document.addEventListener("mouseup", handleEndEdge);
     }
@@ -147,10 +165,10 @@
     // This always fires before handleEndEdge, so it's safe to reference
     // newEdge.
     function handleConnectEdge(event) {
-        let { gadgetId, port, x, y } = event.detail;
+        let { gadgetId, port, portIndex, x, y } = event.detail;
         newEdge.moveEndTo(x, y - navbarHeight);
         try {
-            newEdge.setDest(gadgetId, port);
+            newEdge.setDest(gadgetId, port, portIndex);
             edges.push(newEdge);
             edges = edges;
         } catch (e) {
@@ -158,6 +176,10 @@
         }
     }
 
+    /**
+     * Handle a gadget that was removed.
+     * @param gadgetIdx
+     */
     function removeGadget(gadgetIdx) {
         let [gadget] = gadgets.splice(gadgetIdx, 1);
         let gadgetId = gadget.getId();
@@ -178,6 +200,27 @@
         // Dummy assignment to force reactive update.
         gadgets = gadgets;
     }
+
+    /**
+     * Called when a gadget is moved.
+     * @param event
+     */
+    function handleGadgetMove(event) {
+        let { gadgetId, inputPorts, outputPorts } = event.detail;
+
+        for (let edge of edges) {
+            if (edge.sourceGadgetId === gadgetId) {
+                let start = outputPorts[edge.sourcePortIndex];
+                edge.moveStartTo(start.x, start.y - navbarHeight);
+            } else if (edge.destGadgetId === gadgetId) {
+                let end = inputPorts[edge.destPortIndex];
+                edge.moveEndTo(end.x, end.y - navbarHeight);
+            }
+        }
+
+        // Dummy assignment to trigger reactive update.
+        edges = edges;
+    }
 </script>
 
 <div id="workspace" on:dragover={handleDragOver} on:drop={handleDrop}>
@@ -187,6 +230,7 @@
             on:delete={() => {
                 removeGadget(idx);
             }}
+            on:moved={handleGadgetMove}
             on:startEdge={handleStartEdge}
             on:endEdge={handleConnectEdge}
         />
