@@ -3,10 +3,12 @@
     import Help from "./Help.svelte";
     import Nav from "./Nav.svelte";
     import Toolbox from "./Toolbox.svelte";
+    import Tracker from "./Tracker.svelte";
     import Workspace from "./Workspace.svelte";
 
-    let toolboxVisible = true;
+    let toolboxHidden = false;
     let helpVisible = false;
+    let trackingEnabled = window?.location?.hostname == "encoding.tools";
 
     onMount(() => {
         // Remove the loading screen.
@@ -20,7 +22,7 @@
                 helpVisible = !helpVisible;
                 break;
             case "t":
-                toolboxVisible = !toolboxVisible;
+                toolboxHidden = !toolboxHidden;
                 break;
         }
     }
@@ -29,12 +31,12 @@
 <svelte:window on:keydown={handleKeyDown} />
 
 <main>
-    <Nav
-        on:toggleToolbox={() => (toolboxVisible = !toolboxVisible)}
-        on:showHelp={() => (helpVisible = true)}
-    />
+    {#if trackingEnabled}
+        <Tracker />
+    {/if}
+    <Nav bind:toolboxHidden on:showHelp={() => (helpVisible = true)} />
     <Workspace />
-    <Toolbox hidden={!toolboxVisible} />
+    <Toolbox hidden={toolboxHidden} />
     {#if helpVisible}
         <Help on:hideHelp={() => (helpVisible = false)} />
     {/if}

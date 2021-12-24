@@ -5,6 +5,7 @@
     export let gadget;
 
     const dispatch = createEventDispatcher();
+
     let moveOffsetX, moveOffsetY;
     let display = null;
     let gadgetUnsub = null;
@@ -32,7 +33,7 @@
      */
     function centroid(rect) {
         return {
-            x: (rect.left + rect.right) / 2,
+            x: (rect.left + rect.right) / 2 - 1,
             y: (rect.top + rect.bottom) / 2,
         };
     }
@@ -144,6 +145,36 @@
             });
         }
     }
+
+    /**
+     * Called when the user wants to copy the gadget's value.
+     * @param {MouseEvent} event
+     */
+    async function copyValue(event) {
+        if (display !== null) {
+            let text;
+            if (display.hasError()) {
+                text = display.error;
+            } else if (display.isNull()) {
+                text = "NULL";
+            } else {
+                text = display.text;
+            }
+            await navigator.clipboard.writeText(text);
+        }
+    }
+
+    /**
+     * Called when the user wants to copy the gadget's value.
+     *
+     * Note: this is only valid for input gadgets.
+     * @param {MouseEvent} event
+     */
+    async function pasteValue(event) {
+        const textarea = gadgetEl.querySelector("textarea");
+        textarea.value = await navigator.clipboard.readText();
+        textarea.dispatchEvent(new Event("input"));
+    }
 </script>
 
 <div
@@ -162,10 +193,14 @@
             title="Delete"
             on:click={(e) => dispatch("delete")}
         />
-        {#if gadget.isEditable}
-            <i class="far fa-clipboard button" title="Paste" />
+        {#if gadget.editableValue !== null}
+            <i
+                class="far fa-clipboard button"
+                title="Paste"
+                on:click={pasteValue}
+            />
         {/if}
-        <i class="far fa-clone button" title="Copy" />
+        <i class="far fa-clone button" title="Copy" on:click={copyValue} />
     </div>
     {#if gadget.editableValue === null}
         <div class="content">
@@ -188,7 +223,7 @@
             class="content"
             style="width: {gadget.width - 12}px; height: {gadget.height -
                 36}px;"
-            placeholder="Enter input here…"
+            placeholder="Enter text here…"
             on:input={(e) => gadget.editableValue.set(e.target.value)}
         />
     {/if}
@@ -350,17 +385,6 @@
         height: 30px;
         border-radius: 100%;
         opacity: 0.2;
-    }
-
-    div#workspace.highlight-available-input-ports
-        div.input-port:not(.connected) {
-        border-color: lightblue;
-        background-color: lightblue;
-    }
-
-    div#workspace.highlight-output-ports div.output-port {
-        border-color: lightblue;
-        background-color: lightblue;
     }
 
     /* Force display of scroll bars on MacOS, which otherwise hides scrollbars when not

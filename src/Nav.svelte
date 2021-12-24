@@ -1,12 +1,12 @@
 <script>
     import { createEventDispatcher } from "svelte";
 
-    let toolboxVisible = true;
+    export let toolboxHidden;
 
     const dispatch = createEventDispatcher();
 
     function toggleToolbox(even) {
-        toolboxVisible = !toolboxVisible;
+        toolboxHidden = !toolboxHidden;
         dispatch("toggleToolbox");
     }
 </script>
@@ -22,10 +22,10 @@
             class="btn btn-primary"
             style="margin-right: 1em;"
             ><i class="fas fa-toolbox" />
-            {#if toolboxVisible}
-                Hide
-            {:else}
+            {#if toolboxHidden}
                 Show
+            {:else}
+                Hide
             {/if}
             Toolbox
         </button><button

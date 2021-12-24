@@ -17,7 +17,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Help for Encoding Tools</h5>
+                <h5 class="modal-title">Help for Encoding.Tools</h5>
                 <button
                     on:click={() => dispatch("hideHelp")}
                     type="button"
@@ -30,65 +30,87 @@
             </div>
             <div class="modal-body">
                 <div>
-                    <h1>What is encoding tools?</h1>
+                    <h1>What is encoding.tools?</h1>
                     <p>
-                        Encoding tools is a graphical utility for putting text
-                        or binary data through an abritrary series of
-                        transforms. This tool can be useful for security
-                        researchers or programmers who need to encode or decode
-                        strings with multiple steps, e.g. to decode an
-                        obfuscated string in a URL path, you may need to perform
-                        multiple steps: String → URL decode → Base64 decode.
+                        Encoding.tools is a utility for performing a series of
+                        arbitrary transforms on binary data. This tool can be
+                        useful for security researchers or programmers who need
+                        to encode or decode strings with multiple steps, e.g. to
+                        decode an obfuscated string in a web application, you
+                        may need to perform multiple steps, e.g. URL decode,
+                        then base64 decode, etc.
                     </p>
                     <p>
-                        For more information, see this
-                        <a
-                            href="https://markhaa.se/series/encoding-tools/"
-                            target="_blank">series of blog posts.</a
-                        >
-                    </p>
-                    <p>
-                        Encoding tools is released under the GPL3.
-                        <a
-                            href="https://github.com/mehaase/encoding-tools"
-                            target="_blank">Go to the GitHub repo.</a
-                        >
+                        Each gadget reads a stream of binary data, applies some
+                        transformation, and produces an output stream. You can
+                        connect gadgets together to make complex chains of
+                        transformations.
                     </p>
                     <h1>How do I use it?</h1>
                     <p>
                         The toolbox on the right side of the screen contains all
                         of the gadgets you can use. Drag a gadget onto the
-                        workspace (the area with the gridlines). Connect two
-                        gadgets together by drawing a pipe from gadget's output
-                        port to the other gadget's input port. Then enter some
-                        text into the input gadget and you will see all of the
-                        connected gadgets update the results as you type.
+                        workspace (the area with the gridlines). Wire two
+                        gadgets together by drawing a pipe from one gadget's
+                        output port to the other gadget's input port. Then enter
+                        some text into the input gadget, and you will see all of
+                        the connected gadgets update the results as you type.
                     </p>
-                    <h1>How do I delete things?</h1>
                     <p>
-                        Right click on a gadget's header (the colored area that
-                        displays the gadget's name) to remove it. Right click on
-                        a pipe to remove.
-                    </p>
-                    <h1>Why am I getting nulls?</h1>
-                    <p>
-                        A gadget that transforms an input will display <code
-                            >null</code
-                        >
-                        when its input is not connected to anything. Some transforms
-                        will also display null if their input is invalid, for example
-                        trying to hex decode an odd number of characters.
-                        <strong
-                            >Don't forget that white space counts as characters!</strong
-                        >
+                        Gadgets and edges can be removed by clicking the
+                        <i class="far fa-times-circle" /> icons on the gadget or
+                        edge.
                     </p>
                     <h1>Keyboard shortcuts</h1>
                     <ul>
                         <li><code>?</code> toggle help</li>
                         <li><code>t</code> toggle toolbox</li>
                     </ul>
+                    <h1>Why am I getting nulls?</h1>
+                    <p>
+                        A gadget will display
+                        <span style="color: var(--gray);"
+                            ><i class="fas fa-exclamation-triangle" /> NULL</span
+                        >
+                        when its input is not connected to anything or if its input
+                        stream is 0 bytes long.
+                        <em
+                            >Don't forget that white space counts as characters!</em
+                        >
+                    </p>
+                    <h1>Open Source &amp; Private</h1>
+                    <p>
+                        Encoding tools is released under the GPL3. Submit
+                        feedback, suggestions, and bug reports
+                        <a
+                            href="https://github.com/mehaase/encoding-tools"
+                            target="_blank"
+                            ><i class="fab fa-github" /> on GitHub.</a
+                        >
+                    </p>
+                    <p>
+                        All data is processed locally. None of the transform
+                        data is sent to the server. If you wish, you can also
+                        download and run this locally and run it without an
+                        internet connection.
+                    </p>
+                    <p>
+                        Google Analytics is used to keep track of traffic on the
+                        site.
+                    </p>
+                    <p>
+                        To learn more about the project, see
+                        <a
+                            href="https://markhaa.se/series/encoding-tools/"
+                            target="_blank">the series of blog posts.</a
+                        >
+                    </p>
                     <p class="built-with">
-                        Built with
+                        Built by
+                        <a href="https://github.com/mehaase" target="_blank"
+                            >mehaase</a
+                        >
+                        with
                         <a href="https://svelte.dev/" target="_blank"
                             >Svelte.js</a
                         >

@@ -13,7 +13,7 @@ class BaseInputGadget extends BaseGadget {
         super(x, y, [], [new OutputPort()]);
         this.family = "Input";
         this.cssClass = "input";
-        this.defaultHeight = 6 * cellSize;
+        this.height = 6 * cellSize;
     }
 }
 
@@ -36,6 +36,9 @@ export class InputGadget extends BaseInputGadget {
     transform(value) {
         let data = Buffer.from(value, "utf-8");
         this.outputPorts[0].set(data);
+        // Input gadgets don't actually show the display value, but it is used
+        // when the user clicks the copy button.
+        this.display.set(DisplayState.display(value));
     }
 }
 gadgetRegistry.register((...args) => new InputGadget(...args));

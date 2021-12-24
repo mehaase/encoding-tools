@@ -221,6 +221,17 @@
         // Dummy assignment to trigger reactive update.
         edges = edges;
     }
+
+    /**
+     * Called when an edge is deleted.
+     */
+    function deleteEdge(edge) {
+        const edgeIndex = edges.indexOf(edge);
+        edges.splice(edgeIndex, 1);
+        edge.disconnect();
+        // Dummy assignment to force reactive update.
+        edges = edges;
+    }
 </script>
 
 <div id="workspace" on:dragover={handleDragOver} on:drop={handleDrop}>
@@ -236,10 +247,10 @@
         />
     {/each}
     {#each edges as edge (edge.id)}
-        <Edge {...edge.coords} />
+        <Edge on:delete={() => deleteEdge(edge)} {...edge.coords} />
     {/each}
     {#if newEdge !== null}
-        <Edge {...newEdge.coords} />
+        <Edge {...newEdge.coords} isNewEdge={true} />
     {/if}
 </div>
 
@@ -252,7 +263,7 @@
         right: 0;
         overflow: auto;
 
-        background-image: url(/img/grid.png);
+        background-image: url(../img/grid.png);
         background-repeat: repeat;
     }
 </style>
