@@ -70,9 +70,12 @@
             <div
                 class="gadget-handle {gadgetRegistration.cssClass}-gadget"
                 draggable="true"
+                on:dblclick={() =>
+                    location.assign(`#gadget/${gadgetRegistration.classId}`)}
                 on:dragstart={(event) =>
                     handleDragStart(event, gadgetRegistration)}
                 on:dragend={(event) => handleDragEnd(event, gadgetRegistration)}
+                title="Click and drag onto the workspace, or double click to auto-setup."
             >
                 <i class="fas fa-sm fa-grip-vertical grip" />
                 {gadgetRegistration.title}
@@ -93,8 +96,8 @@
         top: var(--nav-height);
         bottom: 0;
         right: 0;
-        width: var(--drawer-width);
-        z-index: 1;
+        width: var(--toolbox-width);
+        z-index: 2;
         padding: 0.5em;
         overflow-x: hidden;
         overflow-y: auto;
@@ -104,7 +107,8 @@
     }
 
     div#toolbox.hidden {
-        transform: translateX(var(--drawer-width));
+        z-index: 1;
+        transform: translateX(var(--toolbox-width));
     }
 
     h2 {

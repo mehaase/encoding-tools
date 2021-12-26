@@ -89,8 +89,7 @@
         document.removeEventListener("mouseup", endMove);
     }
 
-    // Snap x and y coordinates to the grid and animate the gadget into the new
-    // position.
+    // Snap x and y coordinates to the grid.
     async function snapToGrid() {
         let [oldX, oldY] = [gadget.x, gadget.y];
         gadget.x = Math.round(oldX / cellSize) * cellSize;

@@ -57,6 +57,14 @@
                         the connected gadgets update the results as you type.
                     </p>
                     <p>
+                        If you only want one input gadget and one transform
+                        gadget, then you can double click on the transform to
+                        automatically add it to the workspace and wire it to the
+                        input. There are also some pre-built assemblies of
+                        gadgets in the warehouse that you may find useful or
+                        draw inspiration from.
+                    </p>
+                    <p>
                         Gadgets and edges can be removed by clicking the
                         <i class="far fa-times-circle" /> icons on the gadget or
                         edge.
@@ -65,6 +73,7 @@
                     <ul>
                         <li><code>?</code> toggle help</li>
                         <li><code>t</code> toggle toolbox</li>
+                        <li><code>w</code> toggle warehouse</li>
                     </ul>
                     <h1>Why am I getting nulls?</h1>
                     <p>

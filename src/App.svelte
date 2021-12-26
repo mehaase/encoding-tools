@@ -1,13 +1,18 @@
 <script>
     import { onMount } from "svelte";
+    import { writable } from "svelte/store";
+    import HashRouter from "./HashRouter.svelte";
     import Help from "./Help.svelte";
     import Nav from "./Nav.svelte";
     import Toolbox from "./Toolbox.svelte";
     import Tracker from "./Tracker.svelte";
+    import Warehouse from "./Warehouse.svelte";
     import Workspace from "./Workspace.svelte";
 
-    let toolboxHidden = false;
+    let warehouseVisible = true;
+    let toolboxVisible = false; // TODO
     let helpVisible = false;
+    let hashRouteStore = writable();
     let trackingEnabled = window?.location?.hostname == "encoding.tools";
 
     onMount(() => {
@@ -22,9 +27,46 @@
                 helpVisible = !helpVisible;
                 break;
             case "t":
-                toolboxHidden = !toolboxHidden;
+                toolboxVisible ? hideToolbox() : showToolbox();
+                break;
+            case "w":
+                warehouseVisible ? hideWarehouse() : showWarehouse();
                 break;
         }
+    }
+
+    /**
+     * Display the warehouse that contains assemblies
+     * @param _
+     */
+    function showWarehouse(_) {
+        warehouseVisible = true;
+        hideToolbox();
+    }
+
+    /**
+     * Display the toolbox
+     * @param _
+     */
+    function showToolbox(_) {
+        toolboxVisible = true;
+        hideWarehouse();
+    }
+
+    /**
+     * Hide the warehouse
+     * @param _
+     */
+    function hideWarehouse(_) {
+        warehouseVisible = false;
+    }
+
+    /**
+     * Hide the toolbox
+     * @param _
+     */
+    function hideToolbox(_) {
+        toolboxVisible = false;
     }
 </script>
 
@@ -34,9 +76,19 @@
     {#if trackingEnabled}
         <Tracker />
     {/if}
-    <Nav bind:toolboxHidden on:showHelp={() => (helpVisible = true)} />
-    <Workspace />
-    <Toolbox hidden={toolboxHidden} />
+    <HashRouter {hashRouteStore} />
+    <Nav
+        warehouseHidden={!warehouseVisible}
+        toolboxHidden={!toolboxVisible}
+        on:showWarehouse={showWarehouse}
+        on:hideWarehouse={hideWarehouse}
+        on:showToolbox={showToolbox}
+        on:hideToolbox={hideToolbox}
+        on:showHelp={() => (helpVisible = true)}
+    />
+    <Workspace {hashRouteStore} />
+    <Warehouse hidden={!warehouseVisible} />
+    <Toolbox hidden={!toolboxVisible} />
     {#if helpVisible}
         <Help on:hideHelp={() => (helpVisible = false)} />
     {/if}

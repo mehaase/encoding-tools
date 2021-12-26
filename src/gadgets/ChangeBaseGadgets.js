@@ -69,11 +69,15 @@ export class HexDecodeGadget extends BaseChangeBaseGadget {
         const in0 = this.inputPorts[0].value;
 
         if (in0.length > 0) {
-            let hexString = in0.toString("ascii");
-            let data = Buffer.from(hexString, "hex");
-            let display = data.toString("utf8");
-            this.display.set(DisplayState.display(display));
-            this.outputPorts[0].set(data);
+            try {
+                let hexString = in0.toString("ascii");
+                let data = Buffer.from(hexString, "hex");
+                let display = data.toString("utf8");
+                this.display.set(DisplayState.display(display));
+                this.outputPorts[0].set(data);
+            } catch (e) {
+                this.display.set(DisplayState.error(e));
+            }
         } else {
             this.display.set(DisplayState.null());
             this.outputPorts[0].set(null);

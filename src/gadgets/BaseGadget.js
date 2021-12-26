@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
 import { writable } from "svelte/store";
+import slug from "../slug.js";
 import { cellSize } from "../Layout.js";
 
 let gadgetCounter = 0;
@@ -64,8 +65,7 @@ export class BaseGadget {
      * Return a unique ID for the gadget class.
      */
     getClassId() {
-        let temp = `${this.family}.${this.title}`;
-        return temp.toLocaleLowerCase().replace(/ /g, "_");
+        return slug(`${this.family}.${this.title}`);
     }
 
     /**

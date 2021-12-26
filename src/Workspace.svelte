@@ -1,10 +1,12 @@
 <script>
-    import Edge from "./Edge.svelte";
-    import Gadget from "./Gadget.svelte";
+    import { onDestroy, onMount, tick } from "svelte";
+    import { assemblyRegistry } from "./assembly";
     import Graph from "./Graph.js";
     import { navbarHeight } from "./Layout.js";
     import gadgetRegistry from "./gadgets/GadgetRegistry.js";
     import { InputPort, OutputPort } from "./gadgets/BaseGadget.js";
+    import Edge from "./Edge.svelte";
+    import Gadget from "./Gadget.svelte";
 
     // All gadget modules are imported just to trigger the side effect of adding them
     // to the registry.
@@ -13,8 +15,34 @@
     import { InputGadget } from "./gadgets/InputGadgets.js";
     import {} from "./gadgets/WebGadgets.js";
 
+    export let hashRouteStore;
+
     let nextEdgeId = 0;
     let graph = new Graph();
+    let hashStoreUnsubscribe;
+    let newEdge = null;
+    let edges = [];
+    let defaultInput = new InputGadget(1 * 20, 1 * 20);
+    let gadgets = [defaultInput];
+
+    onMount(() => {
+        hashStoreUnsubscribe = hashRouteStore.subscribe((hash) => {
+            if (hash === "") {
+                // Do nothing
+            } else if (hash.substring(0, 7) === "gadget/") {
+                loadGadget(hash.substring(7));
+            } else {
+                if (!(hash in assemblyRegistry)) {
+                    throw new Error(`Could not find assembly "${hash}"`);
+                }
+                loadAssembly(assemblyRegistry[hash]);
+            }
+        });
+    });
+
+    onDestroy(() => {
+        hashStoreUnsubscribe();
+    });
 
     /**
      * Edges as concept only exist within the Workspace as way to store the state of
@@ -105,11 +133,6 @@
             this.destPort.disconnect();
         }
     }
-
-    let newEdge = null;
-    let edges = [];
-    let defaultInput = new InputGadget(1 * 20, 1 * 20);
-    let gadgets = [defaultInput];
 
     // Handle drag-over events in the workspace.
     //
@@ -231,6 +254,109 @@
         edge.disconnect();
         // Dummy assignment to force reactive update.
         edges = edges;
+    }
+
+    /**
+     *
+     * @param classId
+     */
+    function setPageTitle(title) {
+        document.title = `Encoding Tools: ${title}`;
+    }
+
+    /**
+     * Load an input gadget and one transform gadget into the workspace and wire them
+     * together. These replace all existing gadgets in the workspace, unless the gadget
+     * in the first position is an input gadget, in which case that is used instead of
+     * creating a new input.
+     * @param classId The class ID of the transform gadget
+     */
+    async function loadGadget(classId) {
+        let inputGadget;
+
+        if (gadgets.length > 0 && gadgets[0] instanceof InputGadget) {
+            inputGadget = gadgets[0];
+        } else {
+            inputGadget = new InputGadget(20, 20);
+        }
+
+        let transformGadget = gadgetRegistry.build(
+            classId,
+            inputGadget.x + 60,
+            inputGadget.y + inputGadget.height + 60
+        );
+
+        // Bit of a hack here. If the input gadget is being reused, then it won't get
+        // snapped to grid, so the edge's start position won't be set correctly. This is
+        // brittle as written but will work for now.
+        let newEdge = new EdgeModel(
+            inputGadget.x + 30,
+            inputGadget.y + inputGadget.height + 10,
+            inputGadget.getId(),
+            inputGadget.outputPorts[0],
+            0
+        );
+        newEdge.setDest(
+            transformGadget.getId(),
+            transformGadget.inputPorts[0],
+            0
+        );
+
+        for (let edge of edges) {
+            edge.disconnect();
+        }
+
+        edges = [newEdge];
+        await tick();
+        gadgets = [inputGadget, transformGadget];
+        setPageTitle(transformGadget.title);
+    }
+
+    /**
+     * Load an "assembly", i.e. a predefined configuration of gadgets
+     * @param Object assembly
+     */
+    async function loadAssembly(assembly) {
+        let newGadgets = [];
+        let newEdges = [];
+
+        for (let ag of assembly.gadgets) {
+            let gadget = gadgetRegistry.build(ag.classId, ag.x, ag.y);
+            newGadgets.push(gadget);
+        }
+
+        for (let ae of assembly.edges) {
+            // Notice that edge coordinates are initialized to bogus values. When the
+            // gadgets are initially placed in the workspace, they will be snapped to
+            // the grid, which will broadcast their locations and move all edges to the
+            // correct locations.
+            let sourceGadget = newGadgets[ae.sourceGadget];
+            let sourcePort = sourceGadget.outputPorts[ae.sourcePort];
+            let sourcePortIndex = ae.sourcePort;
+
+            let destGadget = newGadgets[ae.destGadget];
+            let destPort = destGadget.inputPorts[ae.destPort];
+            let destPortIndex = ae.destPort;
+
+            let edge = new EdgeModel(
+                0,
+                0,
+                sourceGadget.getId(),
+                sourcePort,
+                sourcePortIndex
+            );
+            edge.setDest(destGadget.getId(), destPort, destPortIndex);
+            newEdges.push(edge);
+        }
+
+        for (let edge of edges) {
+            edge.disconnect();
+        }
+
+        edges = newEdges;
+        await tick();
+        gadgets = newGadgets;
+        setPageTitle(assembly.title);
     }
 </script>
 

@@ -1,6 +1,7 @@
 body {
     --cell-size: 20px;
-    --drawer-width: 18em;
+    --warehouse-width: 14em;
+    --toolbox-width: 18em;
     --nav-height: 60px;
     --footer-height: var(--cell-size);
 

@@ -1,14 +1,10 @@
 <script>
     import { createEventDispatcher } from "svelte";
 
+    export let warehouseHidden;
     export let toolboxHidden;
 
     const dispatch = createEventDispatcher();
-
-    function toggleToolbox(even) {
-        toolboxHidden = !toolboxHidden;
-        dispatch("toggleToolbox");
-    }
 </script>
 
 <nav
@@ -17,7 +13,22 @@
     <span class="navbar-brand">Encoding <i class="fas fa-wrench" /> Tools</span>
     <div>
         <button
-            on:click={toggleToolbox}
+            on:click={() =>
+                dispatch(warehouseHidden ? "showWarehouse" : "hideWarehouse")}
+            type="button"
+            class="btn btn-primary"
+            style="margin-right: 1em;"
+            ><i class="fas fa-warehouse" />
+            {#if warehouseHidden}
+                Show
+            {:else}
+                Hide
+            {/if}
+            Warehouse
+        </button>
+        <button
+            on:click={() =>
+                dispatch(toolboxHidden ? "showToolbox" : "hideToolbox")}
             type="button"
             class="btn btn-primary"
             style="margin-right: 1em;"
