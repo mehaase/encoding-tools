@@ -5,7 +5,7 @@
 Encoding.Tools is a web application that makes it easy to chain together various
 transformations on binary strings.
 
-<iframe src="https://player.vimeo.com/video/660256549?h=b19e017bd4" width="640" height="526" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+https://user-images.githubusercontent.com/320904/147417331-f44f5889-308a-4113-825d-21c1d31775fc.mp4
 
 ## Getting Started
 
