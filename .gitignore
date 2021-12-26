@@ -1,5 +1,4 @@
-.dart_tool
-.packages
-.pub
-build
-TODO.md
+.DS_Store
+/node_modules/
+/public/build/
+TODO*

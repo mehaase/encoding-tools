@@ -1,0 +1,63 @@
+body {
+    --cell-size: 20px;
+    --warehouse-width: 14em;
+    --toolbox-width: 18em;
+    --nav-height: 60px;
+    --footer-height: var(--cell-size);
+
+    font-family: 'Share Tech', sans-serif;
+    user-select: none;
+}
+
+pre {
+    font-family: 'Share Tech Mono', monospace;
+}
+
+#loading {
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    padding-top: 10rem;
+    font-size: 24pt;
+}
+
+.user-select {
+    user-select: text;
+    cursor: text;
+}
+
+.user-select-all {
+    user-select: all;
+    cursor: text;
+}
+
+/* These gadget styles are shared between the workspace and toolbox. */
+
+div.input-gadget {
+    --gadget-color: var(--green);
+}
+
+div.change-base-gadget {
+    --gadget-color: var(--yellow);
+}
+
+div.hash-gadget {
+    --gadget-color: var(--orange);
+}
+
+div.web-gadget {
+    --gadget-color: var(--blue);
+}
+
+/* Pipes */
+
+svg.pipe {
+    --pipe-color: #948c8c;
+    z-index: 0;
+    display: inline-block;
+    position: absolute;
+}
+
+svg.pipe path {
+    stroke: var(--pipe-color);
+    stroke-width: 10px;
+}
