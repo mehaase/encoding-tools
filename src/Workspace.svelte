@@ -5,15 +5,9 @@
     import { navbarHeight } from "./Layout.js";
     import gadgetRegistry from "./gadgets/GadgetRegistry.js";
     import { InputPort, OutputPort } from "./gadgets/BaseGadget.js";
+    import { InputGadget } from "./gadgets/InputGadgets.js";
     import Edge from "./Edge.svelte";
     import Gadget from "./Gadget.svelte";
-
-    // All gadget modules are imported just to trigger the side effect of adding them
-    // to the registry.
-    import {} from "./gadgets/ChangeBaseGadgets.js";
-    import {} from "./gadgets/HashGadgets.js";
-    import { InputGadget } from "./gadgets/InputGadgets.js";
-    import {} from "./gadgets/WebGadgets.js";
 
     export let hashRouteStore;
 

@@ -1,6 +1,5 @@
 import { Buffer } from "buffer";
 import { BaseGadget, DisplayState, InputPort, OutputPort } from "./BaseGadget.js";
-import gadgetRegistry from "./GadgetRegistry.js";
 
 /**
  * Shared behavior for all change-of base gadgets.
@@ -47,7 +46,6 @@ export class HexEncodeGadget extends BaseChangeBaseGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new HexEncodeGadget(...args));
 
 /**
  * Decode hex characters (base 16) to binary data.
@@ -84,7 +82,6 @@ export class HexDecodeGadget extends BaseChangeBaseGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new HexDecodeGadget(...args));
 
 /**
  * Encode binary data to base64 characters.
@@ -116,7 +113,6 @@ export class Base64EncodeGadget extends BaseChangeBaseGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new Base64EncodeGadget(...args));
 
 /**
  * Decode base64 characters to binary data.
@@ -155,4 +151,3 @@ export class Base64DecodeGadget extends BaseChangeBaseGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new Base64DecodeGadget(...args));

@@ -2,7 +2,6 @@ import { Buffer } from "buffer";
 import { writable } from "svelte/store";
 import { cellSize } from "../Layout.js";
 import { BaseGadget, OutputPort, DisplayState } from "./BaseGadget.js"
-import gadgetRegistry from "./GadgetRegistry.js";
 
 class BaseInputGadget extends BaseGadget {
     /**
@@ -41,4 +40,3 @@ export class InputGadget extends BaseInputGadget {
         this.display.set(DisplayState.display(value));
     }
 }
-gadgetRegistry.register((...args) => new InputGadget(...args));

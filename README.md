@@ -16,8 +16,8 @@ You can also run it locally if you want to use it offline. You need to have [Nod
 NPM installed](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) and
 cloned this repo.
 
-Next, install the NPM dependencies. You only need to run this step after the initial
-cloning of the repo, and also after any updates.
+Next, install the NPM dependencies. You only need to run this step once after the
+initial cloning of the repo, and once more after any updates.
 
 ```bash
 npm install
@@ -89,7 +89,7 @@ Write a new gadget involves the following steps.
     2. Update the components display state, setting it to `DisplayState.null()`,
        `DisplayState.error("error message")`, or `DisplayState.text("text to display")`.
     3. Write the transformed data as a `Buffer` to the output ports.
-5. Register the new gadget in the global gadget registry, e.g. `gadgetRegistry.register((...args) => new HexEncodeGadget(...args));`
+5. Register the new gadget in `GadgetRegistry.js`, e.g. `gadgetRegistry.register((...args) => new HexEncodeGadget(...args));`
 
 ## License
 

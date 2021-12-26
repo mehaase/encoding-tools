@@ -1,3 +1,22 @@
+import {
+    Base64DecodeGadget,
+    Base64EncodeGadget,
+    HexDecodeGadget,
+    HexEncodeGadget,
+} from "./ChangeBaseGadgets.js";
+import {
+    Md5Gadget,
+    Sha1Gadget,
+    Sha2Gadget,
+} from "./HashGadgets.js";
+import { InputGadget } from "./InputGadgets.js";
+import {
+    HtmlDecodeGadget,
+    HtmlEncodeGadget,
+    UrlDecodeGadget,
+    UrlEncodeGadget,
+} from "./WebGadgets.js";
+
 /**
  * Stores useful metadata about each gadget.
  */
@@ -77,3 +96,17 @@ class GadgetRegistry {
 
 let gadgetRegistry = new GadgetRegistry();
 export default gadgetRegistry;
+
+// Register all gadgets below.
+gadgetRegistry.register((...args) => new HexEncodeGadget(...args));
+gadgetRegistry.register((...args) => new HexDecodeGadget(...args));
+gadgetRegistry.register((...args) => new Base64EncodeGadget(...args));
+gadgetRegistry.register((...args) => new Base64DecodeGadget(...args));
+gadgetRegistry.register((...args) => new Md5Gadget(...args));
+gadgetRegistry.register((...args) => new Sha1Gadget(...args));
+gadgetRegistry.register((...args) => new Sha2Gadget(...args));
+gadgetRegistry.register((...args) => new InputGadget(...args));
+gadgetRegistry.register((...args) => new UrlEncodeGadget(...args));
+gadgetRegistry.register((...args) => new UrlDecodeGadget(...args));
+gadgetRegistry.register((...args) => new HtmlEncodeGadget(...args));
+gadgetRegistry.register((...args) => new HtmlDecodeGadget(...args));

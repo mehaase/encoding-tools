@@ -43,7 +43,6 @@ export class UrlEncodeGadget extends BaseWebGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new UrlEncodeGadget(...args));
 
 export class UrlDecodeGadget extends BaseWebGadget {
     /**
@@ -78,7 +77,6 @@ export class UrlDecodeGadget extends BaseWebGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new UrlDecodeGadget(...args));
 
 export class HtmlEncodeGadget extends BaseWebGadget {
     /**
@@ -108,7 +106,6 @@ export class HtmlEncodeGadget extends BaseWebGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new HtmlEncodeGadget(...args));
 
 export class HtmlDecodeGadget extends BaseWebGadget {
     /**
@@ -138,4 +135,3 @@ export class HtmlDecodeGadget extends BaseWebGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new HtmlDecodeGadget(...args));

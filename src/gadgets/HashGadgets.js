@@ -2,7 +2,6 @@ import { Buffer } from "buffer";
 import CryptoES from "crypto-es";
 import { WordArray } from "crypto-es/lib/core.js"
 import { BaseGadget, DisplayState, InputPort, OutputPort } from "./BaseGadget.js";
-import gadgetRegistry from "./GadgetRegistry.js";
 
 
 export function convertBufferToWordArray(buffer) {
@@ -89,7 +88,6 @@ export class Md5Gadget extends BaseHashGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new Md5Gadget(...args));
 
 export class Sha1Gadget extends BaseHashGadget {
     /**
@@ -120,7 +118,6 @@ export class Sha1Gadget extends BaseHashGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new Sha1Gadget(...args));
 
 export class Sha2Gadget extends BaseHashGadget {
     /**
@@ -151,4 +148,3 @@ export class Sha2Gadget extends BaseHashGadget {
         }
     }
 }
-gadgetRegistry.register((...args) => new Sha2Gadget(...args));

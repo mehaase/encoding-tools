@@ -9,8 +9,8 @@
     import Warehouse from "./Warehouse.svelte";
     import Workspace from "./Workspace.svelte";
 
-    let warehouseVisible = true;
-    let toolboxVisible = false; // TODO
+    let warehouseVisible = false;
+    let toolboxVisible = true;
     let helpVisible = false;
     let hashRouteStore = writable();
     let trackingEnabled = window?.location?.hostname == "encoding.tools";
