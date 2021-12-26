@@ -188,6 +188,7 @@
             newEdge.setDest(gadgetId, port, portIndex);
             edges.push(newEdge);
             edges = edges;
+            gadgets = gadgets;
         } catch (e) {
             alert(e);
         }
@@ -248,6 +249,7 @@
         edge.disconnect();
         // Dummy assignment to force reactive update.
         edges = edges;
+        gadgets = gadgets;
     }
 
     /**

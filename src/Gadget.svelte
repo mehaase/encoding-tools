@@ -9,6 +9,8 @@
     let moveOffsetX, moveOffsetY;
     let display = null;
     let gadgetUnsub = null;
+    let inputPortsUnsubs = [];
+
     let gadgetEl;
 
     onMount(() => {
@@ -105,7 +107,7 @@
      * @param portIndex
      */
     function startEdge(event, port, portIndex) {
-        if (event.button === 0) {
+        if (port.connected !== true && event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
             const portEl = event.target.parentNode;
@@ -128,7 +130,7 @@
      * @param portIndex
      */
     function endEdge(event, port, portIndex) {
-        if (event.button === 0) {
+        if (port.connected !== true && event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
             const portEl = event.target.parentNode;
@@ -229,6 +231,7 @@
     {#each gadget.inputPorts as port, index}
         <div
             class="input-port port{index}"
+            class:connected={port.connected}
             on:mousedown={(event) => startEdge(event, port, index)}
             on:mouseup={(event) => endEdge(event, port, index)}
         >
@@ -373,7 +376,7 @@
         cursor: crosshair;
     }
 
-    div.input-port:not(.connected):hover div.highlight,
+    div.input-port:hover div.highlight,
     div.output-port:hover div.highlight {
         position: absolute;
         border: 2px solid var(--gray-dark);
@@ -384,6 +387,11 @@
         height: 30px;
         border-radius: 100%;
         opacity: 0.2;
+    }
+
+    div.input-port.connected:hover div.highlight {
+        border: none;
+        background: none;
     }
 
     /* Force display of scroll bars on MacOS, which otherwise hides scrollbars when not

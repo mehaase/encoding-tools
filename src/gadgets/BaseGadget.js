@@ -164,6 +164,7 @@ export class InputPort {
         this.value = Buffer.from([]);
         this.unsubscribe = null;
         this.store = writable(this.value);
+        this.connected = false;
     }
 
     /**
@@ -171,6 +172,7 @@ export class InputPort {
      * @param {Output} outputPort
      */
     connectTo(outputPort) {
+        this.connected = true;
         this.unsubscribe = outputPort.store.subscribe(
             (value) => {
                 this.value = value;
@@ -183,6 +185,7 @@ export class InputPort {
      * Disconnect from current output port, if any.
      */
     disconnect() {
+        this.connected = false;
         if (this.unsubscribe !== null) {
             this.unsubscribe();
             this.unsubscribe = null;
