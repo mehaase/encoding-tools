@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
 import entities from "entities";
 import { BaseGadget, DisplayState, InputPort, OutputPort } from "./BaseGadget.js"
-import gadgetRegistry from "./GadgetRegistry.js";
 
 class BaseWebGadget extends BaseGadget {
     /**
