@@ -21,7 +21,14 @@
     });
 
     // Handle global keyboard shorcuts.
-    function handleKeyDown(event) {
+    function handleKeyPress(event) {
+        if (
+            event.target.tagName === "TEXTAREA" ||
+            event.target.tagName === "INPUT"
+        ) {
+            // For some reason, keypress events fire inside text inputs. Ignore these.
+            return;
+        }
         switch (event.key) {
             case "?":
                 helpVisible = !helpVisible;
@@ -70,7 +77,7 @@
     }
 </script>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window on:keypress={handleKeyPress} />
 
 <main>
     {#if trackingEnabled}

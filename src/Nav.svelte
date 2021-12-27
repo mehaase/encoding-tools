@@ -10,7 +10,11 @@
 <nav
     class="navbar navbar-expand-lg navbar-light bg-light border-bottom justify-content-between"
 >
-    <span class="navbar-brand">Encoding <i class="fas fa-wrench" /> Tools</span>
+    <a href="#" title="Click to reset the workspace"
+        ><span class="navbar-brand"
+            >Encoding <i class="fas fa-wrench" /> Tools</span
+        ></a
+    >
     <div>
         <button
             on:click={() =>

@@ -9,7 +9,6 @@
     let moveOffsetX, moveOffsetY;
     let display = null;
     let gadgetUnsub = null;
-    let inputPortsUnsubs = [];
 
     let gadgetEl;
 
@@ -101,6 +100,25 @@
     }
 
     /**
+     * Browsers may dispatch events on the highlight element that's positioned on top of
+     * of a port. This method finds the true port element in a cross-browser compatible
+     * way.
+     * @param event
+     */
+    function findPortFromEvent(event) {
+        let el = event.target;
+        if (
+            !(
+                el.classList.contains("input-port") ||
+                el.classList.contains("output-port")
+            )
+        ) {
+            el = el.parentNode;
+        }
+        return el;
+    }
+
+    /**
      * Start the creation of a new edge when a mousedown fires on a port.
      * @param event
      * @param port
@@ -110,7 +128,7 @@
         if (port.connected !== true && event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
-            const portEl = event.target.parentNode;
+            const portEl = findPortFromEvent(event);
             const portRect = portEl.getBoundingClientRect();
             let c = centroid(portRect);
             dispatch("startEdge", {
@@ -133,7 +151,7 @@
         if (port.connected !== true && event.button === 0) {
             // The event triggers on the highlight element that's on top of the
             // port, so we need to find the port element from there.
-            const portEl = event.target.parentNode;
+            const portEl = findPortFromEvent(event);
             const portRect = portEl.getBoundingClientRect();
             const x = (portRect.left + portRect.right) / 2;
             const y = (portRect.top + portRect.bottom) / 2;

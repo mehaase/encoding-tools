@@ -16,13 +16,13 @@
     let hashStoreUnsubscribe;
     let newEdge = null;
     let edges = [];
-    let defaultInput = new InputGadget(1 * 20, 1 * 20);
-    let gadgets = [defaultInput];
+    let gadgets = [];
 
     onMount(() => {
+        resetWorkspace();
         hashStoreUnsubscribe = hashRouteStore.subscribe((hash) => {
             if (hash === "") {
-                // Do nothing
+                resetWorkspace();
             } else if (hash.substring(0, 7) === "gadget/") {
                 loadGadget(hash.substring(7));
             } else {
@@ -258,6 +258,18 @@
      */
     function setPageTitle(title) {
         document.title = `Encoding Tools: ${title}`;
+    }
+
+    /**
+     * Configure the workspace with one input gadget.
+     */
+    function resetWorkspace() {
+        for (let edge of edges) {
+            edge.disconnect();
+        }
+        edges = [];
+        gadgets = [new InputGadget(1 * 20, 1 * 20)];
+        document.title = "Encoding Tools";
     }
 
     /**

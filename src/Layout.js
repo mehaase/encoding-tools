@@ -1,16 +1,12 @@
-function lookupCssVarPx(cssVar) {
-    // Hack for unit testing: if any of these globals don't exist, then
-    // we're running inside a test harness and can return any value.
+function setCssVar(name, value) {
     try {
-        let cssString = getComputedStyle(document.body).getPropertyValue(cssVar);
-        if (cssString.substring(cssString.length - 2) !== "px") {
-            throw new Error(`${cssVar} units must be "px", found "${cssString}"`);
-        }
-        return parseInt(cssString.substring(0, cssString.length - 2), 10);
+        document.body.style.setProperty(name, value);
     } catch (ReferenceError) {
-        return -1;
+        // Unit tests won't have the DOm elements referenced above. Silently ignore.
     }
 }
 
-export const cellSize = lookupCssVarPx("--cell-size");
-export const navbarHeight = lookupCssVarPx("--nav-height");
+export const cellSize = 20;
+setCssVar("--cell-size", `${cellSize}px`);
+export const navbarHeight = 60;
+setCssVar("--nav-height", `${navbarHeight}px`);

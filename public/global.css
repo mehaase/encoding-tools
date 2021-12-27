@@ -1,12 +1,11 @@
 body {
-    --cell-size: 20px;
     --warehouse-width: 14em;
     --toolbox-width: 18em;
-    --nav-height: 60px;
-    --footer-height: var(--cell-size);
+    /* --cell-size and --navbar-height are set from Layout.js */
 
     font-family: 'Share Tech', sans-serif;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 pre {
