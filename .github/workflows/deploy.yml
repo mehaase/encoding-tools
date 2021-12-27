@@ -19,6 +19,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - run: npm run sitemap
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
