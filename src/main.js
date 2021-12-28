@@ -7,10 +7,7 @@ function isTouchEnabled() {
 }
 
 if (isTouchEnabled()) {
-    let message = "This application does not support touch screens.";
-    let loadingDiv = document.querySelector("#loading");
-    loadingDiv.innerHTML = message;
-    throw new Error(message);
+    alert("This application does not support touch screens.");
 }
 
 const app = new App({
