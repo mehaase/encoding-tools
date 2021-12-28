@@ -20,18 +20,7 @@
 
     onMount(() => {
         resetWorkspace();
-        hashStoreUnsubscribe = hashRouteStore.subscribe((hash) => {
-            if (hash === "") {
-                resetWorkspace();
-            } else if (hash.substring(0, 7) === "gadget/") {
-                loadGadget(hash.substring(7));
-            } else {
-                if (!(hash in assemblyRegistry)) {
-                    throw new Error(`Could not find assembly "${hash}"`);
-                }
-                loadAssembly(assemblyRegistry[hash]);
-            }
-        });
+        hashStoreUnsubscribe = hashRouteStore.subscribe(handleHashChange);
     });
 
     onDestroy(() => {
@@ -125,6 +114,39 @@
         disconnect() {
             graph.removeEdge(this.sourceGadgetId, this.destGadgetId);
             this.destPort.disconnect();
+        }
+    }
+
+    async function handleHashChange(hash) {
+        if (hash === "") {
+            resetWorkspace();
+        } else if (hash.substring(0, 7) === "gadget/") {
+            await loadGadget(hash.substring(7));
+        } else {
+            if (!(hash in assemblyRegistry)) {
+                throw new Error(`Could not find assembly "${hash}"`);
+            }
+            await loadAssembly(assemblyRegistry[hash]);
+        }
+
+        await tick();
+
+        // Log to Google Analytics (if enabled)
+        if (window.gtag) {
+            console.log(
+                "gtag",
+                location.pathname + location.search + location.hash
+            );
+            // window.gtag(
+            //     "set",
+            //     "page_path",
+            //     location.pathname + location.search + location.hash
+            // );
+            window.gtag("event", "page_view", {
+                page_title: document.title,
+                page_location: location.href,
+                page_path: location.pathname + location.search + location.hash,
+            });
         }
     }
 
@@ -257,7 +279,7 @@
      * @param classId
      */
     function setPageTitle(title) {
-        document.title = `Encoding Tools: ${title}`;
+        document.title = `${title}–Encoding Tools`;
     }
 
     /**
