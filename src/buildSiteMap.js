@@ -1,4 +1,4 @@
-import { createWriteStream, write } from "fs";
+import { createWriteStream } from "fs";
 import { SitemapStream } from "sitemap";
 import gadgetRegistry from "./gadgets/GadgetRegistry.js"
 import { assemblyRegistry } from "./assembly.js";
