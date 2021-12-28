@@ -117,6 +117,10 @@
         }
     }
 
+    /**
+     * Handle changes to URL hash.
+     * @param hash
+     */
     async function handleHashChange(hash) {
         if (hash === "") {
             resetWorkspace();
@@ -127,17 +131,6 @@
                 throw new Error(`Could not find assembly "${hash}"`);
             }
             await loadAssembly(assemblyRegistry[hash]);
-        }
-
-        await tick();
-
-        // Log to Google Analytics (if enabled)
-        if (window.gtag) {
-            window.gtag("event", "page_view", {
-                page_title: document.title,
-                page_location: location.href,
-                page_path: location.pathname + location.search + location.hash,
-            });
         }
     }
 
