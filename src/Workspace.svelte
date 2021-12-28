@@ -133,15 +133,6 @@
 
         // Log to Google Analytics (if enabled)
         if (window.gtag) {
-            console.log(
-                "gtag",
-                location.pathname + location.search + location.hash
-            );
-            // window.gtag(
-            //     "set",
-            //     "page_path",
-            //     location.pathname + location.search + location.hash
-            // );
             window.gtag("event", "page_view", {
                 page_title: document.title,
                 page_location: location.href,
