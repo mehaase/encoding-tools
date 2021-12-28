@@ -48,7 +48,6 @@
             [endX, endY] = [thickness, height - thickness];
         }
 
-        console.log(left, top);
         path = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
     }
 </script>
