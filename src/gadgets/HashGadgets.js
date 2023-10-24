@@ -119,18 +119,18 @@ export class Sha1Gadget extends BaseHashGadget {
     }
 }
 
-export class Sha2Gadget extends BaseHashGadget {
+export class Sha256Gadget extends BaseHashGadget {
     /**
      * @param {int} x
      * @param {int} y
      */
     constructor(x, y) {
         super(x, y);
-        this.title = "SHA-2";
+        this.title = "SHA-256";
     }
 
     /**
-     * Override BaseGadget#transform() to SHA-2 hash inputs.
+     * Override BaseGadget#transform() to SHA-256 hash inputs.
      */
     transform() {
         const in0 = this.inputPorts[0].value;
@@ -138,6 +138,66 @@ export class Sha2Gadget extends BaseHashGadget {
         if (in0.length > 0) {
             let wordArray = convertBufferToWordArray(in0);
             let digest = CryptoES.SHA256(wordArray)
+            let data = convertWordArrayToBuffer(digest);
+            let display = data.toString("hex");
+            this.display.set(DisplayState.display(display));
+            this.outputPorts[0].set(data);
+        } else {
+            this.display.set(DisplayState.null());
+            this.outputPorts[0].set(null);
+        }
+    }
+}
+
+export class Sha512Gadget extends BaseHashGadget {
+    /**
+     * @param {int} x
+     * @param {int} y
+     */
+    constructor(x, y) {
+        super(x, y);
+        this.title = "SHA-512";
+    }
+
+    /**
+     * Override BaseGadget#transform() to SHA-512 hash inputs.
+     */
+    transform() {
+        const in0 = this.inputPorts[0].value;
+
+        if (in0.length > 0) {
+            let wordArray = convertBufferToWordArray(in0);
+            let digest = CryptoES.SHA512(wordArray)
+            let data = convertWordArrayToBuffer(digest);
+            let display = data.toString("hex");
+            this.display.set(DisplayState.display(display));
+            this.outputPorts[0].set(data);
+        } else {
+            this.display.set(DisplayState.null());
+            this.outputPorts[0].set(null);
+        }
+    }
+}
+
+export class RipeMD160Gadget extends BaseHashGadget {
+    /**
+     * @param {int} x
+     * @param {int} y
+     */
+    constructor(x, y) {
+        super(x, y);
+        this.title = "RIPEMD-160";
+    }
+
+    /**
+     * Override BaseGadget#transform() for RIPEMD-160 hash inputs.
+     */
+    transform() {
+        const in0 = this.inputPorts[0].value;
+
+        if (in0.length > 0) {
+            let wordArray = convertBufferToWordArray(in0);
+            let digest = CryptoES.RIPEMD160(wordArray)
             let data = convertWordArrayToBuffer(digest);
             let display = data.toString("hex");
             this.display.set(DisplayState.display(display));
