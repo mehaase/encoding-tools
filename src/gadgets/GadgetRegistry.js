@@ -7,7 +7,9 @@ import {
 import {
     Md5Gadget,
     Sha1Gadget,
-    Sha2Gadget,
+    Sha256Gadget,
+    Sha512Gadget,
+    RipeMD160Gadget,
 } from "./HashGadgets.js";
 import { InputGadget } from "./InputGadgets.js";
 import {
@@ -104,7 +106,9 @@ gadgetRegistry.register((...args) => new Base64EncodeGadget(...args));
 gadgetRegistry.register((...args) => new Base64DecodeGadget(...args));
 gadgetRegistry.register((...args) => new Md5Gadget(...args));
 gadgetRegistry.register((...args) => new Sha1Gadget(...args));
-gadgetRegistry.register((...args) => new Sha2Gadget(...args));
+gadgetRegistry.register((...args) => new Sha256Gadget(...args));
+gadgetRegistry.register((...args) => new Sha512Gadget(...args));
+gadgetRegistry.register((...args) => new RipeMD160Gadget(...args));
 gadgetRegistry.register((...args) => new InputGadget(...args));
 gadgetRegistry.register((...args) => new UrlEncodeGadget(...args));
 gadgetRegistry.register((...args) => new UrlDecodeGadget(...args));
